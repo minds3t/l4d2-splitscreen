@@ -1,0 +1,49 @@
+{
+  "source": "xbox_raw\\default.xex",
+  "source_sha256": "b3ce6f0840cf5f19279ee69f20f3493eecdfb3e63dfa3dfc597196607c3a7ee4",
+  "output": "research\\xbox_lobby\\default.xex.pe",
+  "output_sha256": "9272876da9b8cb5b2059cc4b959205f523b2d01b4ea1a0143dc5897e0269c0a2",
+  "output_bytes": 786432,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x82000000",
+  "entry_point": "0x82010cb8",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 8100,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0x2400",
+      "size": 952,
+      "raw": "0x2400"
+    },
+    {
+      "name": ".text",
+      "va": "0x10000",
+      "size": 32872,
+      "raw": "0x2800"
+    },
+    {
+      "name": ".data",
+      "va": "0x20000",
+      "size": 4184,
+      "raw": "0xaa00"
+    },
+    {
+      "name": ".idata",
+      "va": "0x30000",
+      "size": 326,
+      "raw": "0xb800"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0x40000",
+      "size": 48,
+      "raw": "0xba00"
+    }
+  ]
+}

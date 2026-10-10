@@ -1,0 +1,69 @@
+{
+  "scope": "Exact-build PC/Xbox comparison and scoped native confirmation presentation. Exit confirmation passed live; final a11932a9 paint-time correction also passed the startup warning at 4K. Earlier query-only/scheme-attempt builds retained a disabled Cancel row.",
+  "gameui_sha256": "321ec9b5865582330af61e81eb347da31cc213cc6c95b80d6d98170b8a5fbb40",
+  "pc": {
+    "constructor_rva": "0x572e0",
+    "vtable_rva": "0x1753a4",
+    "resource": "resource/ui/l4d360ui/genericconfirmation.res",
+    "button_update_rva": "0x570c0",
+    "mode_query": "InputSystem v39 (+0x9c) at GameUI+0x570d3; return0x570d5",
+    "call_and_following_bytes": "ff d2 83 be d4 02 00 00 00 8a d8",
+    "device_result_effect": "False shows BtnOK/IconForwardArrow and BtnCancel/IconBackArrow depending on enabled actions. True hides those selectable PC rows.",
+    "footer": "Updater constructs mask from enabled OK/Cancel actions and calls native SetButtons(mask,4,false,null) at0x571c1; labels are localized L4D360UI_OK and L4D360UI_Cancel.",
+    "controller_handler_rva": "0x574b0",
+    "native_actions": "Normalizes controller key through GameUI+7030, then A(0x72) invokes existing OK callback and B(0x73) existing Cancel callback. A directly confirms regardless of highlighted PC row, making the PC selection highlight misleading.",
+    "keyboard_and_mouse": "OnCommand0x56f60 converts OK/cancel to corresponding native controller action for active local user; OnKeyTyped0x56ff0 maps Enter/Space to A and Escape to B.",
+    "newer_pc_contracts": "Current PC dialog dynamically creates LblMessage and optional CvarToggleCheckButton_GameUI/LblCheckButton; BtnOK and BtnCancel are L4D360HybridButton. These controls must retain their names/types and callback behavior.",
+    "apply_scheme_rva": "0x571f0, GenericConfirmation vtable1753A4 slot88; thiscall(this,IScheme*) ret4",
+    "deferred_child_lifecycle": "Constructor calls UpdateButtons at57465 after scheduling resource load. ApplySchemeSettings first invokes base F660, then caches IconForwardArrow/BtnOK/IconBackArrow/BtnCancel into2D4/2D8/2DC/2E0 at57216/5722A/5723E/5724B. It never calls UpdateButtons after those resource-visible children are cached. Key/Open handlers do call the updater."
+  },
+  "xbox": {
+    "resource": "xbox_ui/left4dead2/resource/ui/l4d360ui/genericconfirmation.res",
+    "constructor_va": "0x8407e858",
+    "presentation": "Creates LblOkButton/LblCancelButton with native GameUI_Icons_A_3DBUTTON/B_3DBUTTON localization and adjacent OK/Cancel labels. PC-style Button children are hidden on Xbox.",
+    "difference": "ISO resource alone cannot substitute for PC: PC class now uses newer message/optional-check-box children and shared footer instead of old per-dialog A/B labels."
+  },
+  "plan": "Keep the exact updater device-query override. Resolve only four named PC button/arrow children from the current GenericConfirmation tree before its background paints, and call verified native SetVisible(false) in console scope. No cached-pointer rewrite, resource replacement, or action handling change.",
+  "verification": {
+    "compile": "Replacement source standalone MSVC Win32 C++17 /W4 /EHsc compile passed with no diagnostics.",
+    "binary": "Exact11bytes independently read from supported PC GameUI and matched.",
+    "integration": "No plugin/CMake/build_native_addon change required; existing presentation Install/Shutdown manage it.",
+    "runtime": "c14f exit confirmation900p passed: no desktop rows, native A OK/B Abbrechen. d871 startup4K still showed disabled Cancel; controller query override logged active but added scheme hook body did not. Final a11932a9 startup4K passed: no desktop rows and native A/OK footer; independently inspected startup_fixed_4k.jpg. Root reported hidden mask0xf and all four cached pointers equal the child lookup results.",
+    "independent_review": "native_ui reviewed the exact root/scope gates, complete instruction prefix, PaintBackground thiscall ABI, nonrecursive child lookup, verified SetVisible virtual and original forwarding. No native action, message, checkbox or footer mutation found. Superseded scheme attempt was ABI-correct but ineffective live.",
+    "evidence": "test-results/2026-10-10-prompts-votes/startup_fixed_4k.jpg; package-audit-20261010T022332618752Z.json verifies installed DLL SHA a11932a956ee86e980fd854ab6f60eb1631e53fb180b68954ff029ec99476b64.",
+    "cause_limit": "The successful paint pass confirms visibility enforcement, not why the earlier native updater left a row visible. Equal cached/found pointers provide no support for a stale-pointer explanation; deferred scheme timing remains unproven."
+  },
+  "implementation": {
+    "source": "native/presentation.cpp",
+    "source_sha256": "e25527ae11905d35de4a4fca8972e43e013e7539afa681fca2cdac1fa31b7356",
+    "entry": "Existing InputSystem predicate detour plus exact GenericConfirmation::PaintBackground at57090.",
+    "scope": "Exact same InputSystem object, explicit bridge-enabled flag, exact GameUI return570D5, and lobby::UseConsoleMenuPresentation().",
+    "result": "True at the one confirmation updater query; all other existing non-footer callers keep their native result.",
+    "validation": "Install verifies ff d2 83 be d4 02 00 00 00 8a d8 at GameUI+570D3 in addition to exact module fingerprints and existing interface checks.",
+    "logging": "Once per installed lifecycle; reset on Install and Shutdown.",
+    "unchanged": "Current PC resource, dynamically created message/check-box controls, button types, action callbacks, native controller A/B and keyboard Enter/Escape handlers, footer mask/order/labels, input routing and configuration.",
+    "live_child_visibility": {
+      "entry_rva": "0x57090",
+      "vtable": "0x1753A4 slot127",
+      "prefix": "8b 81 c8 02 00 00 (one complete six-byte instruction)",
+      "abi": "void __thiscall(void* self), native function RET at570B0; hook fastcall(self,unusedEDX).",
+      "validation": "Exact supported GameUI fingerprint; vtable entry; paint prefix; FindChildByNameCEB70 prefix55 8b ec83 ec0c; SetVisibleCA750 prefix55 8b ec8b4508.",
+      "scope": "Readable exact GenericConfirmation vtable plus lobby::UseConsoleMenuPresentation(); nonmatching cases call original unchanged and log first guard reason.",
+      "children": [
+        "IconForwardArrow",
+        "BtnOK",
+        "IconBackArrow",
+        "BtnCancel"
+      ],
+      "lookup": "FindChildByName(this,name,false), same function and nonrecursive mode used by native ApplySchemeSettings. Cached fields2D4..2E0 are read only for diagnostics.",
+      "visibility": "Each nonnull child must have readable vtable and slot33==GameUI+CA750; native SetVisible(false) then runs before original background and subsequent VGUI child paint.",
+      "diagnostics": "Once-per-lifecycle root vtable, cached/found pointer pairs, verified SetVisible status and hidden-child mask. Missing/unexpected children are not mutated.",
+      "cleanup": "Shared hook removal followed by reset of original pointer, child finder and log flags in Shutdown."
+    }
+  },
+  "superseded_attempt": {
+    "type": "Post ApplySchemeSettings hook at571F0",
+    "reason_removed": "d871 startup4K still showed disabled Cancel row. Hook was installed but scoped body log never appeared; therefore deferred scheme timing was not established as the cause and the hook was removed.",
+    "live_snapshot": "GameUI warning had been dismissed before read-only heap scan; no current matching object was found and no stale address was treated as evidence."
+  }
+}

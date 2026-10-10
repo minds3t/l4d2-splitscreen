@@ -1,0 +1,68 @@
+2026-10-10 controller aiming investigation and version 32
+
+Initial state: version31 DLL a11932a956ee86e980fd854ab6f60eb1631e53fb180b68954ff029ec99476b64
+Native aim slowdown was already present. cl_autoaim/cl_autoaim2=1;
+P1 cl_inputmode=1, P2=0; dampen=.3/range=.85; independent input routing.
+User physically reported some slowdown before changes.
+
+Baseline90s capture missed the user's sweep: no changing XInput state.
+Its null cl_autoaim caches were uninitialized references, not disabled cvars.
+This capture is inconclusive about target detection and remains unmodified.
+
+Three-curve trial: joy_lowend=.75, joy_accelscale=2, joy_accelmax=1.
+User: "Yes, aiming feels better".
+The90s updated read-only capture recorded P1 targettrue120/1800 samples,
+589 moving-stick samples,75 target+moving samples. P1 mode1/autoaim1;
+P2 mode0/autoaim1 and targetfalse throughout. No target/camera/bullet patch.
+
+User then reported looking around was still "Too twitchy or speeds up oddly".
+The full sensitivity trial added PC pitch+.8/yaw-2.25 for both local slots,
+matching Xbox magnitudes and retaining the verified normal PC pitch sign.
+User: "still weird but maybe thats on me. if we use the same logic and
+settings as xbox then it must be fine". This is not a subjective parity pass.
+
+Further primary-binary comparison found both InputSystems already remove and
+rescale the same8689-unit right-stick deadzone. PC client applies another
+pitch threshold.1; Xbox client normalizes directly. Setting pitchthreshold0
+removes the extra PC stage while preserving the original upstream deadzone.
+The live trial was applied and queried as0. User could not test further;
+the final deadzone adjustment has no hands-on feel confirmation.
+
+Original manually changed sensitivities and threshold were restored before
+quitting the intermediate408c569d build. config-before-final-install.cfg
+preserves all original input values; differences from the initial config are
+numeric formatting and the map sky setting only.
+
+Final installed DLL8c172117da20171af5431aed776c9eae4ba1fb659f8ff6bea7a9cd33c48b2c0c
+VPK1dcd6d64360a5ac6f10b2e24d34c34437b65654aae0ac147deb4325dab01e583.
+All3 native CTests and28 Python tests pass. VPK93entries retain every prior
+HUD/menu/script byte; only version metadata changes. Native source delta is
+input.cpp,input.h,tests/input_abi.cpp. Historicalv27 fallback unchanged.
+
+Fresh final4K borderless launch automatically applied all8 profile settings.
+Explicit disable restored all8 originals, joystick0, guard0, split15.
+Re-enable applied the profile again without replacing original snapshots.
+See final-startup-disable.txt and final-reenable.txt.
+
+Final4K game startup: native Campaign lobby -> Dead Center c1m1_hotel,
+Nick/Rochelle with genuine local guest attached, keyboard owner in_forceuser1,
+guard1/joystick1/split2, sv_cheats0, both native Auto-Aim choices1. All8
+profile values remained active after map setup. See final-game-save.txt.
+This is a software-routing check, not a repeated hands-on independence test.
+
+host_writeconfig while playing logged prepared1/restoredLive1, wrote original
+archived values, and immediately left every temporary profile value active.
+Normal quit repeated that successful protection before client teardown.
+After quit, the entire config differs from the original only in numeric
+formatting. Ordered keyboard/mouse binds are identical, all9 protected
+preferences (joystick+8profile) retain their original numerical values, and
+there are no other semantic changes. See config-preservation-final.json,
+config-diff-final.txt, config-after-final-quit.cfg and final-quit.txt.
+
+Installed equality and complete source/package delta were verified by
+package-audit-20261010T030019916414Z.json. The final source/test manifest is
+copied here as native-build-validation.json. ss_aim_v32_final.jpg captures
+the final3840x2160 split game with the existing per-player HUD prompts.
+The game was closed after the successful quit check. Start Local Co-op.cmd
+automatically reapplies the new profile on the next experimental launch.
+No two-controller physical test or final deadzone feel confirmation is claimed.

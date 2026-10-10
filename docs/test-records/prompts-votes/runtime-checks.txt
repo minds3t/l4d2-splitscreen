@@ -1,0 +1,114 @@
+Prompts, confirmation and vote UI investigation (2026-10-10)
+
+Baseline: DLL8e498ecb, VPK911258e3 (version30). Copied before changes.
+User screenshot20261010040125_1.jpg is idle-before.jpg: P1/controller idle with Mouse1.
+
+Intermediate c14f2929 +83808822 (1600x900 windowed):
+- votes-900.jpg: separate nonoverlapping call-vote flyout rows.
+- difficulty-900.jpg: four choices and separate Cancel row; full German heading.
+- confirmation-900.jpg: quit-to-menu shows A/OK and B/Cancel, with desktop rows hidden.
+- Escape canceled confirmation and preserved the game.
+- idle-900.jpg: native P1 idle prompt now shows RT.
+- idle-keyboard-900.jpg still shows P1 idle/P2 active; it is NOT keyboard-AFK evidence.
+- Native lookup logs R_TRIGGER for attack, L_TRIGGER for attack2, X_BUTTON for use.
+
+Intermediate0f5ca947 +83808822 (3840x2160 borderless):
+- launcher runs -windowed -noborder -w3840 -h2160 -x0 -y0.
+- engine JPEG dimensions confirm3840x2160; native window fills the screen.
+- lobby_4k.jpg: shared lobby and avatars; full settings label and player names.
+- votes_4k.jpg /difficulty_4k.jpg: same readable flyout/modal layout at4K.
+- idle_p2_4k.jpg: P2 actually idle, native Mouse1 icon. Native log confirms slot1 keyboard attack=MOUSE1.
+- A Sky mouse click returned P2 to active first-person view; P1 stayed active.
+- This final hud_prompts.cpp reads native matcher names independently for keyboard and each pad.
+
+Intermediate d8718525 +83808822 (3840x2160 borderless):
+- startup_d871_4k.jpg: disabled Cancel row persists; the additional scheme-refresh hypothesis did NOT fix it.
+- User clarified the reported overlap is the active in-game Yes/No vote HUD, not the menu flyout.
+- votehud_before_4k.jpg reproduces overlapping PC and console instructions on both views.
+- Native ChangeDifficulty Easy vote eventually passed; z_difficulty reported Easy.
+- Actual overlay correction and final validation are recorded below when complete.
+
+Final a11932a9 DLL + de1ec3cb VPK (3840x2160 borderless):
+- Installed files match the current build exactly. Immutable static/package evidence:
+  package-audit-20261010T022332618752Z.json.
+- startup_fixed_4k.jpg: one-button startup notice has native A/OK and no disabled
+  desktop Cancel row. Native diagnostics reported hidden mask0xf; all four cached
+  child pointers equalled the live lookup results. A stale-pointer cause is unproven.
+- votehud_final_4k.jpg: P1 has full German Start/Back instructions; P2 has bright
+  F1/F2 instructions. No overlapping instruction sets or clipped No text remain.
+- cmd2 vote No registered a red X and the native No selection highlight:
+  votehud_no_4k.jpg. Difficulty stayed Normal after the timer expired.
+- These vote actions were native command tests, not new physical Start/Back/F1/F2
+  button tests. A second physical controller remains unavailable.
+
+Same final build, live resolution switch from 3840x2160 to 1600x900:
+- P2 called an Easy difficulty vote and P1 voted Yes; votehud_final_900.jpg shows
+  separate per-device instructions and votehud_yes_900.jpg shows the native success
+  result on both views. Difficulty changed to Easy.
+- This hot-switch run showed inconsistent scaling elsewhere (oversized teammate
+  health versus small vote text). It proves the observed vote state/result behavior,
+  but is not decisive evidence for fresh 1600x900 geometry. A fresh 900p launch and
+  return to the default 4K launch remain pending at this checkpoint.
+
+Same a11932a9 DLL + de1ec3cb VPK, fresh 1600x900 launch:
+- votehud_fresh_900.jpg confirms clean active-vote instruction geometry at native
+  size after a fresh launch, resolving the preceding hot-switch uncertainty.
+- votehud_failed_900.jpg exposes a separate German result defect: the wrapped
+  two-line VoteFailed title is cropped inside its 17-unit resource height.
+- Native quit confirmation shows only A/OK and B/Cancel. Escape returned to pause
+  and preserved the game; Return reopened the dialog and a second Return confirmed
+  the exit to main menu. ss_native_lobby_status reported session0/owned0 afterward.
+- Teammate name bands extending below the horizontal divider are pre-existing:
+  earlier hud-menus/hud_final_horizontal.jpg has the same geometry, also documented
+  in that folder's baseline runtime record. No teammate health changes were made.
+
+Result-geometry resource candidate: a11932a9 DLL + a21f3e90 VPK:
+- Installed hashes, all 93 entries, manifest/CTest evidence and exact baseline delta
+  pass package-audit-20261010T022738581049Z.json.
+- German-only VotePassed, VoteFailed and CallVoteFailed now reserve title height36,
+  detail Y48 and panel height98. All original title fonts, text, widths, wrap, colors,
+  icons and other language geometry remain unchanged. Active vote rows are unchanged.
+- Fresh 900p and 4K result rendering checks are pending at this checkpoint.
+
+Final a11932a9 + a21f3e90, fresh1600x900 after the intro:
+- votehud_verified_900.jpg: both per-device instruction sets are clean and complete
+  at the native size; no overlay stacking or German No-text truncation.
+- votehud_failed_fixed_900.jpg: full two-line German failure heading and explanation
+  are separate and readable on both views. Native No result passed; difficulty
+  remained Normal. Both screenshots were independently inspected.
+- votehud_cooldown_900.jpg is misnamed: that second call was accepted as a normal
+  vote. It is NOT evidence for the separate CallVoteFailed panel. That variant
+  remains statically checked but not observed live.
+- Game closed for a fresh4K launch; no more source/resource changes planned.
+
+Same a11932a9 + a21f3e90, fresh3840x2160:
+- votehud_verified_4k.jpg: final active instructions remain clean at4K.
+- votehud_passed_fixed_4k.jpg: native Yes outcome displays full German success text,
+  but that text fits ONE line. Applying two-line title height to VotePassed shifted
+  it below its checkmark unnecessarily. The next revision will restore VotePassed
+  completely to stock and retain the verified two-line adjustment only for
+  VoteFailed and CallVoteFailed. Native DLL and active instructions are unchanged.
+
+Final narrowed resource: a11932a9 DLL + d5f86206 VPK:
+- Installed equality and strict resource contract pass immutable
+  package-audit-20261010T023059396209Z.json.
+- Direct comparison with saved a21 VPK is recorded in vote-result-scope-d5f86206.json:
+  VoteActive, VoteFailed and CallVoteFailed have identical ASTs and serialized-block
+  hashes. Only VotePassed reverted, completely matching the original baseline.
+  Earlier fresh900 active/failure rendering evidence therefore remains applicable.
+- confirmation_final_4k.jpg shows only native A/OK and B/Abbrechen; Escape canceled
+  to pause and preserved the game. The screenshot was independently inspected.
+- Final4K success-panel and idle-prompt rechecks are ongoing at this checkpoint.
+
+Final release checks completed, a11932a9 + d5f86206, fresh3840x2160:
+- votehud_release_4k.jpg: active controller/keyboard instructions clean.
+- votehud_success_release_4k.jpg: original compact success panel, complete German
+  heading and aligned green checkmark. Independently inspected.
+- Normal difficulty restored through a native P2 vote call and P1 Yes vote.
+- idle_release_4k.jpg: P1 idle with correct RT prompt, P2 remains active.
+  Native input status: active1, guard1, joystick1, split2.
+- User physically confirmed: "Yes, RT rejoins the top player."
+  This is a final-build physical controller rejoin pass, beyond prompt rendering.
+- Game left active at4K on Normal difficulty. No further UI inputs performed.
+- CallVoteFailed remains unobserved live, and a second physical controller remains
+  unavailable. Earlier misnamed cooldown capture must not be counted as that panel.

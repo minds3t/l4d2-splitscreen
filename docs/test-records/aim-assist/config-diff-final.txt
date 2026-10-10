@@ -1,0 +1,51 @@
+--- config-before.cfg
+
++++ config-after-final-quit.cfg
+
+@@ -176,8 +176,8 @@
+
+ gameinstructor_enable "1"
+ hud_classautokill "1"
+ hud_takesshots "0"
+-joy_accelmax "4.0"
+-joy_accelscale "3.0"
++joy_accelmax "4.000000"
++joy_accelscale "3.000000"
+ joy_advanced "0"
+ joy_advaxisr "0"
+ joy_advaxisu "0"
+@@ -197,14 +197,14 @@
+
+ joy_inverty2 "0"
+ joy_legacy "0"
+ joy_legacy2 "0"
+-joy_lowend "0.65"
++joy_lowend "0.650000"
+ joy_lowmap "0.15"
+ joy_movement_stick "0"
+ joy_movement_stick2 "0"
+ joy_name "L4D Xbox360 Joystick Configuration"
+-joy_pitchsensitivity "1"
+-joy_pitchsensitivity2 "1"
+-joy_pitchthreshold "0.1"
++joy_pitchsensitivity "1.000000"
++joy_pitchsensitivity2 "1.000000"
++joy_pitchthreshold "0.100000"
+ joy_response_look "1"
+ joy_response_move "5"
+ joy_sensitive_step0 "0.1"
+@@ -216,10 +216,10 @@
+
+ joy_vibration2 "1"
+ joy_wingmanwarrior_centerhack "0"
+ joy_wingmanwarrior_turnhack "0"
+-joy_yawsensitivity "-1.5"
+-joy_yawsensitivity2 "-1"
++joy_yawsensitivity "-1.500000"
++joy_yawsensitivity2 "-1.000000"
+ joy_yawthreshold "0.0"
+-joystick "0.000000"
++joystick "0"
+ l4d_delete_temp_files "1"
+ lookspring "0"
+ lookstrafe "0"

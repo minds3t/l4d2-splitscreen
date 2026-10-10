@@ -1,0 +1,181 @@
+Xbox 360 shared offline lobby: static binary findings
+Date: 2026-10-10
+
+Scope
+-----
+Read-only analysis of the user's extracted Xbox 360 disc binaries. No Xbox
+emulator, physical console, or live console UI was run. No PC addon, installed
+game file, or running process was changed by this research.
+
+The disc implements independent character ownership through a shared lobby.
+This finding does not prove simultaneous independent focus cursors. A native
+PC guest-registration/controller-identity bridge has not been implemented.
+
+Reproduction
+------------
+Run from the repository root (Python with existing pefile and capstone):
+
+  python -m pip install --target docs/research/xbox_lobby/vendor pycryptodome
+  python docs/research/xbox_lobby/extract_basic_xex.py xbox_raw/bin/GameUI_360.dll xbox_raw/left4dead2/bin/matchmaking_360.dll xbox_raw/default.xex xbox_raw/bin/tier0_360.dll
+  python docs/research/xbox_lobby/ppc_refs.py docs/research/xbox_lobby/GameUI_360.dll.pe character_ 30
+  python docs/research/xbox_lobby/ppc_refs.py docs/research/xbox_lobby/matchmaking_360.dll.pe @0x8b0b0c90 185
+  python docs/research/xbox_lobby/test_ppc_refs.py
+  python docs/research/xbox_lobby/save_traces.py
+
+These four inputs are XEX2 containers with encryption type 1 and basic
+compression type 1. AES-CBC decoding and insertion of the basic blocks' zero
+runs produce valid Xbox PowerPC PE headers. No LZX decompressor is required.
+The derived .pe files are XEX memory images: address bytes by VA minus image
+base, NOT by the stale PE PointerToRawData fields. Discarded PE sections may
+extend beyond the reconstructed payload; Xbox imports/exports use XEX tables.
+
+Each *.json sidecar records input/output SHA-256, output size, image base,
+entry point and section metadata. Extraction uses Xenia's public XEX format
+description and loader behavior; the narrow extractor was written here.
+Reference copies and Xenia's license are retained beside this report:
+  https://github.com/xenia-project/xenia/blob/master/src/xenia/cpu/xex_module.cc
+  https://github.com/xenia-project/xenia/blob/master/src/xenia/kernel/util/xex2_info.h
+  https://github.com/xenia-project/xenia/blob/master/src/xenia/kernel/xam/xam_table.inc
+
+The checked local AES dependency is pycryptodome 3.24.0, installed only in this
+research directory. No additional dependency was added to the addon build.
+
+Decoded image bases
+-------------------
+  GameUI_360.dll:       0x84000000
+  matchmaking_360.dll:  0x8b080000
+  tier0_360.dll:        0x82c00000
+  default.xex:         0x82000000
+
+1. Offline session contains each local player before gameplay
+-----------------------------------------------------------
+matchmaking_360.dll, function 0x8b0b0c90 is identified by its diagnostic string
+at 0x8b0870a0: CMatchSessionOfflineCustom::InitializeGameSettings.
+
+  0x8b0b0cc8: System/network = offline
+  0x8b0b0cdc: System/access = public
+  0x8b0b0d10: Options/server = listen
+  0x8b0b0d44: Members/numMachines = 1
+  0x8b0b0d4c: call tier0 ordinal 0x321, obtain game-user count in r27
+  0x8b0b0d58..7c: Members/numPlayers = n, Members/numSlots = n
+  0x8b0b0d88: create Members/machine0
+  0x8b0b0de8..f4: machine0/numPlayers = n
+  0x8b0b0e60..0f00: loop k = 0 .. n-1, create machine0/player%d
+  0x8b0b0e90: map k to controller using tier0 ordinal 0x32c
+  0x8b0b0e98..ac: GetLocalPlayer(controller)
+  0x8b0b0eb0..f4: copy that player's XUID and name into player%d
+
+This contrasts with the currently investigated PC initializer, which produces
+one member and one player0. A second viewport created after entering the map
+cannot retroactively supply the original pre-game member records.
+
+2. Shared offline lobby uses the ordinary GameLobby window
+--------------------------------------------------------
+GameUI_360.dll 0x84052dec..0x84052e44 reads System/network and
+Members/numPlayers. It chooses window type 9 by default, changing to type 11
+only when network == offline AND numPlayers <= 1.
+
+OpenWindow dispatch table at 0x840517e4 maps:
+  type 9  -> 0x84051970, GameLobby
+  type 11 -> 0x840519c0, GameSettings
+  type 28 -> 0x84051c20, AttractScreen (name loaded at 0x84051c38)
+
+Thus offline + two registered users selects GameLobby. There is no additional
+offline-only lobby resource required to explain the remembered console flow.
+
+3. Character ownership follows the last active local UI user
+-----------------------------------------------------------
+GameLobby's character_ action lives at 0x84075880..0x84075988. It constructs
+Game::Avatar and obtains the requesting identity as follows:
+
+  0x840758c4: call BaseModPanel singleton accessor 0x8404fb00
+  0x840758c8: call 0x8404fbe0, reading this->field_254
+  0x840758cc: call tier0 ordinal 0x32c to map UI slot to controller
+  0x840758d4: retain controller in r28
+  0x84075900: pass r28 to player-manager local-player vcall
+  0x84075910..1c: obtain that local player's XUID
+  0x8407592c..38: set command routing field to host
+  0x8407593c..4c: set Game::Avatar/xuid to this XUID
+  0x84075950..60: set Game::Avatar/avatar to the character_ suffix
+  0x84075964..88: send the command to the current matchmaking session
+
+The field is positively identified as LastActiveUserId by the paired setter
+0x8404fb88. That function logs "SetLastActiveUserId: %d -> %d" from 0x840060a0
+and writes +0x254 at 0x8404fbc0. Getter 0x8404fbe0 is just load +0x254; return.
+GameSettings duplicates the same identity route at 0x8407c958..0x8407c9f4.
+
+This confirms each controller can own a different character choice through the
+shared dialog. It does not establish two independent focus cursors at once.
+The PC character action currently investigated passes a literal zero to its
+local-player lookup instead of this controller-derived identity.
+
+4. Local player registration and Xbox identity dependency
+--------------------------------------------------------
+PlayerManager::OnGameUsersChanged is self-labelled by the diagnostic at
+0x8b0822e8 and begins at 0x8b097390. It clears four local-player slots, then:
+
+  0x8b097448: obtain game-user count
+  0x8b097454..58: map loop slot to controller
+  0x8b097460..74: allocate 0xc48-byte PlayerLocal, constructor 0x8b09d768
+  0x8b097484..90: store player at manager + 8 + 4*controller
+  0x8b097494: obtain the per-slot guest flag
+  0x8b0974a8..b8: increment slot and continue for all game users
+
+PlayerLocal constructor 0x8b09d768 initializes XUID to zero, stores the passed
+controller at +0x10, and obtains the platform XUID unless the primary-user guest
+flag is set. The wrapper at 0x8b0955b0 invokes xam.xex ordinal 0x20a with flags
+7 and an output XUID pointer. Xenia's ordinal table identifies 0x20a as
+XamUserGetXUID. A nonzero XUID loads a profile/name; zero uses the game's guest
+name provider. This constructor does not synthesize a PC-style second Steam
+identity or a fake guest-XUID increment. The actual console account/guest
+identity is supplied by the Xbox platform.
+
+Resolved tier0 imports (semantic labels; symbol names are not in these tables):
+  ordinal 0x321 -> 0x82c21b88: returns game-user count at 0x82c64c44
+  ordinal 0x32c -> 0x82c21d20: slot -> controller from 0x82c43094 + 4*slot
+  ordinal 0x330 -> 0x82c21e40: per-slot guest flag, 0x82c64c60 + 4*slot
+  ordinal 0x31f -> 0x82c21b68: primary-user guest flag at 0x82c64c40
+  ordinal 0x31d -> 0x82c21b48: primary controller at 0x82c42ff0
+
+GameUI stub 0x8414b7c4 and matchmaking stub 0x8b0df2b8 both import ordinal
+0x32c from library index 2 (tier0_360.dll). Matchmaking 0x8b0df2c8 imports 0x321.
+
+5. EnableSplitscreen and SoloPlay are different stages
+----------------------------------------------------
+GameUI main-menu EnableSplitscreen branch 0x84090d78..0x84090db8 logs enabling,
+clears the existing window flow, calls 0x8405df50 with (1, -1), and opens window
+type 28. The OpenWindow table resolves this to AttractScreen, the console's
+sign-in/user-acquisition stage. It does not immediately open GameLobby.
+
+The disc's SoloPlay branch 0x84090690..0x840906f0 constructs offline/coop
+settings, supplies difficulty, then calls matchmaking CreateSession. The
+registered game-user count later determines GameLobby versus GameSettings.
+The newer PC SoloPlay_<mode> expansion is not present as the same string route
+in this older disc binary.
+
+default.xex is primarily the launcher stub: 0x820107e0 references
+launcher_360.dll, and 0x82010880 loads it. The shared lobby/character behavior
+described above resides in GameUI and matchmaking, rather than default.xex.
+
+Saved evidence and limits
+-------------------------
+  xbox_gameui_trace.txt       selected PPC UI/character/ready/enable traces
+  xbox_matchmaking_trace.txt  offline initializer and local-player construction
+  xbox_tier0_trace.txt        count/controller/guest accessors
+  *.json                     source and derived-image hashes/metadata
+
+Instruction decoding and branch targets are direct. Automatic constant/string
+annotations in ppc_refs.py are convenience heuristics, not control-flow analysis.
+Calls invalidate volatile GPRs; other branches, returns and known function
+boundaries clear tracked values. The findings above were checked against the
+actual instructions and data, independently of these convenience annotations.
+
+Remaining blockers for a native PC equivalent:
+  - Register a real second local matchmaking member before session creation.
+  - Provide separate guest identity/controller mapping on PC without Xbox APIs.
+  - Route menu input and Game::Avatar ownership by the acting local player.
+  - Validate that session startup carries both avatars to the in-game humans.
+  - Establish actual focus behavior through live tests; do not assume dual focus.
+
+No claim is made here that a native PC bridge exists or that Xbox binaries can
+be substituted for x86 PC DLLs. They contain different platform code and CPU ISA.

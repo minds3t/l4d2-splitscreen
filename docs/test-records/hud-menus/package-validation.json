@@ -1,0 +1,155 @@
+{
+  "validated_at_utc": "2026-10-10T01:42:20.139451+00:00",
+  "scope": "Read-only comparison of frozen VPK/stage/baseline and recorded build validation. No build, install, game commands, UI actions, test rerun or renewed physical input testing.",
+  "baseline": {
+    "path": "test-results\\2026-10-10-hud-menus\\baseline-native.vpk",
+    "format": 1,
+    "entry_count": 82,
+    "bytes": 517106,
+    "sha256": "3ebe7395d3dba6ba955f1b1440e536f8b1344618877bb5d045ec5de952b1a9f1",
+    "archive_errors": []
+  },
+  "candidate": {
+    "path": "build\\native-splitscreen_support.vpk",
+    "format": 1,
+    "entry_count": 88,
+    "bytes": 589214,
+    "sha256": "a383f7c958f3034f02bfc3941cc9645162278a012f2ee55b47629122ea863a90",
+    "archive_errors": []
+  },
+  "stage": {
+    "path": "build/native-addon",
+    "file_count": 88,
+    "every_entry_byte_identical": true
+  },
+  "baseline_delta": {
+    "added": [
+      "resource/ui/l4d360ui/audio.res",
+      "resource/ui/l4d360ui/ingamechapterselect.res",
+      "resource/ui/l4d360ui/ingamedifficultyselect.res",
+      "resource/ui/l4d360ui/keyboardmouse.res",
+      "resource/ui/l4d360ui/multiplayer.res",
+      "resource/ui/l4d360ui/video.res"
+    ],
+    "removed": [],
+    "changed": [
+      "addoninfo.txt",
+      "scripts/hudlayout.res"
+    ],
+    "unchanged_count": 80,
+    "expected_delta_only": true,
+    "hud_semantic_changes": [
+      {
+        "key": "Resource/HudLayout.res/HudWeaponSelection/tall",
+        "before": "200",
+        "after": "175"
+      }
+    ],
+    "primary_binding_y_pos": {
+      "baseline": "38",
+      "candidate": "38",
+      "unchanged": true
+    },
+    "addoninfo_semantic_changes": [
+      {
+        "key": "AddonInfo/AddonVersion",
+        "before": "29-console-native-experiment",
+        "after": "30-console-hud-native-experiment"
+      }
+    ]
+  },
+  "preserved_prior_resources": {
+    "basis": "Every pre-existing entry except addoninfo.txt and scripts/hudlayout.res is byte-identical to the saved baseline. Native text-inset painting is DLL code, not a newly edited VPK scheme.",
+    "selected_unchanged_sha256": {
+      "materials/vgui/menu_mode_splitscreen.vmt": "2327f680ea92673a8fd12bd8557e1d03e020a244f56ae3414b21a129b5c424b9",
+      "resource/l4d360uischeme.res": "59a716d85490af43bcc94c4e4283e2dc9281aa7f33fc4ae608d60669b9afaf5c",
+      "resource/ui/l4d360ui/dropdownchapter.res": "fcfaf78f622c501e9258ae1f154fe0b2d6d8e73c194a5cd769de1b7ac530f9a3",
+      "resource/ui/l4d360ui/dropdowncharacters.res": "0d3516e12b2105dcae46a55ca3869fb121f977131d297682b1e4fc60afaee9dd",
+      "resource/ui/l4d360ui/dropdowncoopcharacters.res": "b59fc105b15b472be77aad0e8e0397594a9e4a6c0128edc7eed04319b3ff954f",
+      "resource/ui/l4d360ui/dropdowndifficulty.res": "4352a8a8ced9612bf991f03818db612b4ce80fb7075d45c38f1f457ac55bcd83",
+      "resource/ui/l4d360ui/dropdownlobbygameaccess.res": "d3536e16bcff4391913e057d889cbd8aa2900391a5636fa6534d9d6928fda365",
+      "resource/ui/l4d360ui/dropdownmission.res": "d15bc0f4f3fb5a2a2057a4455ac6dc5cb6cb85d2a6feaa84935e21ce4115400d",
+      "resource/ui/l4d360ui/dropdownmissionextended.res": "4555bb923f8f28b76bf96174bd84cd3f74870adc9842cb3ec1fee94bc0b773d2",
+      "resource/ui/l4d360ui/dropdownmissionscavenge.res": "1df134567bdaf65bb0d2942a56301f96759ff96dbf40f595f67fc9c00a3509cc",
+      "resource/ui/l4d360ui/dropdownmissionscavengeextended.res": "83f4f6c88275377f98d862a411923dd22f862f1725da81194125abc7a6c60ce6",
+      "resource/ui/l4d360ui/dropdownmissionsurvival.res": "ea530377ad7ec14b12db0e362c7c7c55942bad47f6e72eb77e498ef66a82721c",
+      "resource/ui/l4d360ui/dropdownmissionsurvivalextended.res": "3c8ec6d1c962ddbcf485259a8da867a8e9a86847ed56ba1933f283e44904a41b",
+      "resource/ui/l4d360ui/dropdownmissionversus.res": "31481784a1adb76c96aef770608c93a7c1fd718095b9290c5ab8441166675d51",
+      "resource/ui/l4d360ui/dropdownmissionversusextended.res": "1cca48e5b5f4d4bd51b03c02733c743b81b8a997b6c84f33dd5e1b39dac1ac5f",
+      "resource/ui/l4d360ui/dropdownroundlimit.res": "f397cbfe25c9be9070044ab46cc080cd2ebb98f4eef8270db966bc6db66935b6",
+      "resource/ui/l4d360ui/dropdownservertype.res": "337f3a28be96dd9ca61a495fdfa74aa26ce11f1b104729395739ced0a115eb20",
+      "resource/ui/l4d360ui/dropdownswitchmode4.res": "a4c0516ac0ea12587ef5450991e0afe61a763bc9ba0d939f8d5d64c138b1fc6e",
+      "resource/ui/l4d360ui/dropdownswitchmode8.res": "f3c191cd8ae0a73e83d72fa607d426cd5e97918a3f9da8c171e75350d478cc83",
+      "resource/ui/l4d360ui/dropdownversuscharacters.res": "228ca23221b215811e913547da75a99819cb9b6764c30e633c4d5486b6ce3ad5",
+      "resource/ui/l4d360ui/footerpanel.res": "c39994b1297ea4a254181086ac8e92a09f99efd521725116eb09f4522241ec12",
+      "resource/ui/l4d360ui/gamelobby.res": "3e6b559c0f76d55effe4670ca3661f3a8d0b46a76a153e250be68ec8d5ebbf36",
+      "resource/ui/l4d360ui/ingamemainmenu.res": "38c45c6593eac4aaf19bf4d307857cd2ebb67af4cc56ab60a5aeb6c0a14fd9f1",
+      "resource/ui/l4d360ui/mainmenu.res": "bb76bcf498fb758bc3620ec4729bf85197118588f5ebce3f65662a74ed97d75e",
+      "resource/ui/l4d360ui/survivorlistitem.res": "3b89b978136fdea40112865cdd5e8226e040d2b2529f61e479866fd8b3d0717f"
+    }
+  },
+  "v27": {
+    "path": "build/splitscreen_support.vpk",
+    "historical_evidence": "test-results/2026-10-10-v27/validation.json",
+    "matches_historical_hash": true,
+    "every_stage_entry_byte_identical": true,
+    "handwritten_source_mismatches": [],
+    "format": 1,
+    "entry_count": 54,
+    "bytes": 376670,
+    "sha256": "93812da20f57c0208216939501e65f9418f31405136a0e801bb2caa35b42a123",
+    "archive_errors": []
+  },
+  "native_overlay": {
+    "scripts/vscripts/splitscreen_characters.nut": {
+      "archive_and_stage_identical": true,
+      "sha256": "25acdce775670f4bee41d18143e4e263c0fe56520e090b210a5eea29e0ae34ad"
+    }
+  },
+  "native_script_contract": {
+    "local_competitive_setup_retained": true,
+    "local_competitive_restore_retained": true,
+    "fallback_team_start_absent": true
+  },
+  "recorded_native_checks": {
+    "manifest": "native/build/Release/validation.json",
+    "dll_sha256": "c9b3c23474403fae6b540a586aca9a360b43fbe010f833156e75bcb6e1ab7cb3",
+    "dll_bytes": 194560,
+    "source_hashes_current": true,
+    "ctests": {
+      "guest_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\guest_abi_test.exe",
+        "sha256": "b85d3bf69eb5f22c7dbcac256568eec81a4290b7444f2e2c41303f0cf35ec1ad"
+      },
+      "input_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\input_abi_test.exe",
+        "sha256": "4f02b7443a50e1ba35793583c29091f886cf8df59bb6334be45ef67bc0e36791"
+      },
+      "safearea_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\safearea_abi_test.exe",
+        "sha256": "3c1eaf3a41b177bf3b08912969b60e894c060b92fdcbbc5b84c53aa0fcd1fea0"
+      }
+    },
+    "tests_rerun": false
+  },
+  "installed_and_runtime": "Installed DLL/VPK match the audited build byte for byte. Live layout, visual behavior and explicit-disable restoration remain pending root validation; no renewed physical input test.",
+  "static_validation_pass": true,
+  "installed_files": {
+    "checked_at_utc": "2026-10-10T01:43:37.458062+00:00",
+    "dll": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\ss_native.dll",
+      "bytes": 194560,
+      "sha256": "c9b3c23474403fae6b540a586aca9a360b43fbe010f833156e75bcb6e1ab7cb3",
+      "byte_identical_to_build": true
+    },
+    "vpk": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\splitscreen_support.vpk",
+      "bytes": 589214,
+      "sha256": "a383f7c958f3034f02bfc3941cc9645162278a012f2ee55b47629122ea863a90",
+      "byte_identical_to_build": true
+    }
+  }
+}

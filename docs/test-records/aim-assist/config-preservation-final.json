@@ -1,0 +1,16 @@
+{
+  "profile_and_joystick_original_values_preserved": true,
+  "ordered_bind_lines_unchanged": true,
+  "other_semantic_changes": {},
+  "saved_values": {
+    "joystick": "0",
+    "joy_lowend": "0.650000",
+    "joy_accelscale": "3.000000",
+    "joy_accelmax": "4.000000",
+    "joy_pitchthreshold": "0.100000",
+    "joy_pitchsensitivity": "1.000000",
+    "joy_pitchsensitivity2": "1.000000",
+    "joy_yawsensitivity": "-1.500000",
+    "joy_yawsensitivity2": "-1.000000"
+  }
+}

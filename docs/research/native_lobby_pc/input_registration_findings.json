@@ -1,0 +1,197 @@
+{
+  "scope": "Static, read-only analysis; preferred-image RVAs, not loaded process addresses. No bridge installed or live interfaces called.",
+  "modules": {
+    "gameui.dll": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\bin\\gameui.dll",
+      "sha256": "321ec9b5865582330af61e81eb347da31cc213cc6c95b80d6d98170b8a5fbb40",
+      "size": 2325296,
+      "image_base": "0x10000000",
+      "pe_timestamp": 1782845066,
+      "sites": {
+        "enable_splitscreen_command": {
+          "rva": "0x68e46",
+          "va": "0x10068e46",
+          "first_16_image_bytes": "68 08 87 17 10 53 e8 0f 61 05 00 83 c4 08 85 c0"
+        },
+        "set_attract_mode": {
+          "rva": "0x21e10",
+          "va": "0x10021e10",
+          "first_16_image_bytes": "55 8b ec e8 48 7c fe ff 85 c0 74 1c 56 8b 75 08"
+        },
+        "attract_mode_global": {
+          "rva": "0x2010c0",
+          "va": "0x102010c0",
+          "first_16_image_bytes": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+        },
+        "open_window_dispatch": {
+          "rva": "0xac00",
+          "va": "0x1000ac00",
+          "first_16_image_bytes": "55 8b ec 83 ec 0c 53 8b 5d 08 8b 03 56 8b f1 57"
+        },
+        "attract_constructor_case": {
+          "rva": "0xb158",
+          "va": "0x1000b158",
+          "first_16_image_bytes": "68 f4 02 00 00 e8 de cf 07 00 83 c4 04 85 c0 0f"
+        },
+        "attract_constructor": {
+          "rva": "0x23020",
+          "va": "0x10023020",
+          "first_16_image_bytes": "55 8b ec 8b 45 0c 53 56 57 6a 01 6a 01 6a 01 6a"
+        },
+        "attract_vtable": {
+          "rva": "0x167a2c",
+          "va": "0x10167a2c",
+          "first_16_image_bytes": "90 10 00 10 b0 14 0d 10 c0 92 0d 10 10 15 0d 10"
+        },
+        "attract_on_open": {
+          "rva": "0x222e0",
+          "va": "0x100222e0",
+          "first_16_image_bytes": "56 8b f1 e8 98 e8 fe ff a1 c0 10 20 10 b9 01 00"
+        },
+        "attract_signin_transition": {
+          "rva": "0x22620",
+          "va": "0x10022620",
+          "first_16_image_bytes": "55 8b ec 8b 45 08 56 8b f1 8b 0d 10 15 22 10 8b"
+        },
+        "attract_signin_completion_stub": {
+          "rva": "0x21f40",
+          "va": "0x10021f40",
+          "first_16_image_bytes": "c3 cc cc cc cc cc cc cc cc cc cc cc cc cc cc cc"
+        },
+        "attract_key_pressed": {
+          "rva": "0x22ba0",
+          "va": "0x10022ba0",
+          "first_16_image_bytes": "55 8b ec 57 8b f9 f3 0f 10 87 f0 02 00 00 0f 2e"
+        },
+        "controller_index_from_button": {
+          "rva": "0xe880",
+          "va": "0x1000e880",
+          "first_16_image_bytes": "55 8b ec 8b 45 08 83 f8 72 7c 07 3d 31 01 00 00"
+        },
+        "normalize_button_to_controller_zero": {
+          "rva": "0x7030",
+          "va": "0x10007030",
+          "first_16_image_bytes": "55 8b ec 8b 45 08 8d 48 8e 83 f9 7f 77 14 83 c0"
+        },
+        "avatar_lobby_handler": {
+          "rva": "0x4f920",
+          "va": "0x1004f920",
+          "first_16_image_bytes": "6a 2c e8 c9 11 07 00 83 c4 04 85 c0 74 14 6a 00"
+        },
+        "base_frame_key_pressed": {
+          "rva": "0xeb80",
+          "va": "0x1000eb80",
+          "first_16_image_bytes": "55 8b ec 81 ec 04 01 00 00 a1 f8 db 1f 10 33 c5"
+        },
+        "set_last_active_user_id": {
+          "rva": "0x9b00",
+          "va": "0x10009b00",
+          "first_16_image_bytes": "55 8b ec 56 8b f1 8b 86 84 02 00 00 57 8b 7d 08"
+        },
+        "get_last_active_user_id": {
+          "rva": "0x9b30",
+          "va": "0x10009b30",
+          "first_16_image_bytes": "8b 81 84 02 00 00 c3 cc cc cc cc cc cc cc cc cc"
+        },
+        "get_base_mod_panel": {
+          "rva": "0x9a90",
+          "va": "0x10009a90",
+          "first_16_image_bytes": "a1 10 fb 1f 10 c3 cc cc cc cc cc cc cc cc cc cc"
+        },
+        "base_mod_panel_global": {
+          "rva": "0x1ffb10",
+          "va": "0x101ffb10",
+          "first_16_image_bytes": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+        }
+      }
+    },
+    "matchmaking.dll": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\bin\\matchmaking.dll",
+      "sha256": "b405c7a2b786775e1940eccebcd6756335ceb20b583b43a05df7a457f9fe0e61",
+      "size": 484656,
+      "image_base": "0x10000000",
+      "pe_timestamp": 1782845006,
+      "sites": {
+        "player_manager_global_pointer": {
+          "rva": "0x6494c",
+          "va": "0x1006494c",
+          "first_16_image_bytes": "08 8d 06 10 ff ff 7f 7f ff ff 7f 7f ff ff 7f 7f"
+        },
+        "player_manager_vtable": {
+          "rva": "0x51a8c",
+          "va": "0x10051a8c",
+          "first_16_image_bytes": "b0 78 00 10 10 78 00 10 d0 79 00 10 d0 7a 00 10"
+        },
+        "get_local_player": {
+          "rva": "0x7810",
+          "va": "0x10007810",
+          "first_16_image_bytes": "55 8b ec 8b 45 08 83 f8 03 77 08 8b 44 81 08 85"
+        },
+        "on_game_users_changed": {
+          "rva": "0x7c30",
+          "va": "0x10007c30",
+          "first_16_image_bytes": "53 56 57 68 5c 1a 05 10 8b f1 ff 15 b4 f1 04 10"
+        },
+        "player_local_constructor": {
+          "rva": "0xafc0",
+          "va": "0x1000afc0",
+          "first_16_image_bytes": "55 8b ec 0f 57 c0 83 ec 08 53 33 db 56 8b f1 89"
+        },
+        "player_local_vtable": {
+          "rva": "0x52530",
+          "va": "0x10052530",
+          "first_16_image_bytes": "40 9e 00 10 50 9e 00 10 60 9e 00 10 70 9e 00 10"
+        },
+        "player_local_get_xuid": {
+          "rva": "0x9e40",
+          "va": "0x10009e40",
+          "first_16_image_bytes": "8b 41 08 8b 51 0c c3 cc cc cc cc cc cc cc cc cc"
+        },
+        "player_local_get_controller": {
+          "rva": "0x9e50",
+          "va": "0x10009e50",
+          "first_16_image_bytes": "8b 41 10 c3 cc cc cc cc cc cc cc cc cc cc cc cc"
+        },
+        "player_local_get_name": {
+          "rva": "0x9e60",
+          "va": "0x10009e60",
+          "first_16_image_bytes": "8d 41 18 c3 cc cc cc cc cc cc cc cc cc cc cc cc"
+        },
+        "engine_splitscreen_added_handler": {
+          "rva": "0x4066",
+          "va": "0x10004066",
+          "first_16_image_bytes": "57 68 80 01 05 10 e8 7f b6 02 00 83 c4 08 85 c0"
+        },
+        "apply_session_avatar_to_engine_slot": {
+          "rva": "0x3b80",
+          "va": "0x10003b80",
+          "first_16_image_bytes": "55 8b ec 83 ec 18 56 57 6a 2c e8 d1 c9 02 00 83"
+        },
+        "apply_session_avatar_switch_and_send": {
+          "rva": "0x3d05",
+          "va": "0x10003d05",
+          "first_16_image_bytes": "a1 c4 49 06 10 8b 48 5c 8b 11 8b 82 f8 01 00 00"
+        },
+        "offline_initialize_settings": {
+          "rva": "0x253e0",
+          "va": "0x100253e0",
+          "first_16_image_bytes": "55 8b ec 81 ec 18 01 00 00 a1 30 76 06 10 33 c5"
+        }
+      }
+    },
+    "engine.dll": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\bin\\engine.dll",
+      "sha256": "8a6d468059394bf4cfce32f11dcba12ef45de88da1373084d5a2916d0bf7ba86",
+      "size": 4817712,
+      "image_base": "0x10000000",
+      "pe_timestamp": 1782845142,
+      "sites": {
+        "broadcast_splitscreen_client_added": {
+          "rva": "0x82e5b",
+          "va": "0x10082e5b",
+          "first_16_image_bytes": "e8 a0 bc fd ff 6a 2c e8 09 3e 20 00 83 c4 04 85"
+        }
+      }
+    }
+  }
+}

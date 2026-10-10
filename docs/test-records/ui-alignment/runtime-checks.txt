@@ -1,0 +1,39 @@
+UI alignment verification, 2026-10-10, German UI, 1600x900 window.
+
+DLL: 1a3fcee4ca051b26b7ab506ff2a83a0b77d424dade1251f27b3520370de75155
+VPK: c30e84f65aead6b8ec0a5981bc985d060785118dbb80b8c884ed364562848c74
+Installed files exactly match these build hashes.
+
+Character portraits:
+- PC native flyout compacts height and Button positions by0.7, leaving the
+  portrait ImagePanel unchanged. Xbox offsets20/30 clipped or biased it down.
+- Kept portrait size/assets; restored stock PC offsets4/12 in all3 resources.
+- Realism Random and Nick portraits visibly fit with balanced vertical margins.
+- Actual mouse Nick selection affected player2 only; player1 remained Random.
+- Versus's taller6-row picker also centers the64x64 portrait and fits its rows.
+
+Footer:
+- Verified exact original PC calls and matching Xbox renderer arithmetic.
+- Standard native layouts now pass tableY+8, replacing PC tableY-14, before
+  native proportional scaling. Glyphs and labels shift together.
+- No-help background now uses the Xbox25% top/75% height. Custom layouts and
+  full-height help backgrounds retain their original behavior.
+- New anchor and background hooks both logged their activation in-game.
+- Visual passes: startup notice, main menu with A/X, Realism lobby with B/A,
+  character flyouts, settings A/B and active-game pause A/B.
+- Footer icon/text now align vertically within the visible background strip.
+
+Regression and final state:
+- Exact-build gating loaded/supported/enabled; both native CTests passed.
+-26 Python tests passed,82 VPK entries match staging, v27 fallback unchanged.
+- Realism startup succeeded; pause rendered and native ReturnToLobby vote
+  restored Realism/Dead Center/chapter1/Normal and two local members.
+- Restored both characters to Random, matching the user's pretest lobby.
+- Final state: owned1 network offline players2 slots2 active1;
+  input guard1 joystick1 split2. Game left open in that Realism lobby.
+- This alignment-only change does not modify input routing or character commands.
+
+Images: alignment_before/portrait_before, mainmenu_after, portrait_after,
+settings_after, versus_after, pause_after and ready. Logs saved alongside.
+Physical controller and keyboard tests remain in the preceding checkpoint;
+no new second-controller or online verification was possible here.

@@ -1,0 +1,63 @@
+2026-10-10 review fixes (version 33), live checks 05:49-06:13
+
+Driven over netconsole (ss_native_create / ss_native_avatar / ss_native_start)
+at 3840x2160 borderless, German client, user away. No physical input was given
+by a person: these are software-state checks, not hands-on play.
+
+Final artifacts
+  DLL        aecc1daa3c36a3bd6ccd9c57bb85423e8619157337162708730231b8e1ec5c6c
+  HUD VPK    915f8e58e44dbf11216beafa8c4bd75392d855d5e03b28318feae334e5862fb6 (45 files)
+  menu VPK   bbd1b6924a8d0e0dbe48cf247ea83a9cfd20ee4f3ed438dcb3895ced0bad3424 (47 files)
+  3 native CTests and 32 Python tests pass. The last live runs used this DLL
+  and these packages except for the version string in addoninfo.txt.
+
+Engine-side join (DLL 13c0ad63, keyboard only, no controller connected)
+- Enable: flag cvar 4, "Keyboard/mouse drive player 1 (controller 1 not connected)".
+- Coop Nick/Rochelle: "[join] Owned offline map start: engine connects 2 local
+  players itself", script printed "the engine connects both players" and sent
+  no connect_splitscreen. Console: "Processing Split Screen connection packet",
+  "Players: 2 (0 bots) / 4 humans". Observer: P1 gambler, P2 producer, both
+  human, team 2, keyboardOwner 0. engine-join-game.jpg.
+- disconnect to menu: process alive, session gone, guard1 joystick1 split4.
+- Second session Survival Coach/Ellis: again one split-screen connection
+  packet, both human, characters 2 and 3.
+- changelevel c1m4_atrium inside that session: both players stayed connected.
+- quit from the running game: clean, config.cfg kept joystick 0, the original
+  curve/sensitivity values and W / MOUSE1 binds. The watcher removed
+  splitscreen_menus.vpk about 10 s after exit.
+
+Controller present (controller 1 became connected before the second launch)
+- Flag cvar 3, in_forceuser 1, "Keyboard/mouse drive player 2".
+- Idle P1 shows the RT prompt, keyboard P2 shows Q (controller-present-idle-prompt.jpg).
+- CBindPanel log: slot 0 controller R_TRIGGER / L_TRIGGER / X_BUTTON.
+- No instructor hint with a binding was on screen, so the new per-device
+  instructor lookup is verified by code and byte checks only.
+
+Scoreboard
+- Before: "A - Spielerkarte anzeigen" visible (scoreboard-gamercard-before.jpg).
+- After: prompt gone, select-player and vote-kick prompts remain
+  (scoreboard-gamercard-hidden.jpg).
+
+Crash found and fixed
+- Quit from the running game at 06:01 (DLL b03b9465) crashed:
+  left4dead2_crash_20261010060120_1.mdmp, access violation reading 0x4b4cbabc at
+  engine.dll+0x1b92a1. Stack: Host_Shutdown -> Host_Disconnect ->
+  CBaseClientState::Disconnect (+54280, "Disconnect by user.") ->
+  CNetChan::Shutdown (+1bb950) -> Transmit -> SendDatagram (+1b9b30) -> split
+  sub-channel merge (+1b9240). The merge walks the host channel's split-player
+  map, whose player-two channel had already been freed. No plugin frame is on
+  the stack; the same family as the 2026-10-09 23:37 disconnect crash.
+- Fix (DLL aecc1daa): skip that merge while a CNetChan::Shutdown is on the stack.
+- Three further launch / start / quit cycles (one with a disconnect first):
+  the guard logged "Skipped split-player merge in a closing net channel" every
+  time, i.e. the stale merge happens on every such exit; no crash, "Unload
+  complete" each time, no new dump.
+
+Not checked
+- Second physical controller, and any hands-on play.
+- The menu rows for split direction and local co-op off/on were built and
+  unit-tested but not clicked; main-menu.jpg only shows the tile.
+- ss_native_join 0 (scripted reconnect fallback) was not re-run.
+- Which of 4k_ui and the addon wins for hudlayout.res / clientscheme.res at
+  runtime is still unknown; the build now uses 4k_ui's versions as its input,
+  so both give the same crosshair size and font tiers.

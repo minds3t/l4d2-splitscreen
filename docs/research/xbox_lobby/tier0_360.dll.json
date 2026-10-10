@@ -1,0 +1,55 @@
+{
+  "source": "xbox_raw\\bin\\tier0_360.dll",
+  "source_sha256": "a9c046fa9b27ce7227c0c5bedb4c699a54261e782d24447487fd44cc3be77b38",
+  "output": "research\\xbox_lobby\\tier0_360.dll.pe",
+  "output_sha256": "29ec100e50adcb9490afd5bc873ac293ef0aac6152ae1f1a4d5a6d7574c0598b",
+  "output_bytes": 294912,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x82c00000",
+  "entry_point": "0x82c246e0",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 13204,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0x3800",
+      "size": 4776,
+      "raw": "0x3800"
+    },
+    {
+      "name": ".text",
+      "va": "0x10000",
+      "size": 167952,
+      "raw": "0x4c00"
+    },
+    {
+      "name": ".data",
+      "va": "0x40000",
+      "size": 151832,
+      "raw": "0x2de00"
+    },
+    {
+      "name": ".edata",
+      "va": "0x70000",
+      "size": 13694,
+      "raw": "0x32600"
+    },
+    {
+      "name": ".idata",
+      "va": "0x80000",
+      "size": 450,
+      "raw": "0x35c00"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0x90000",
+      "size": 48,
+      "raw": "0x35e00"
+    }
+  ]
+}

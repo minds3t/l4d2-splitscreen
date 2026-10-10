@@ -1,0 +1,146 @@
+{
+  "scope": "Static package audit only; no runtime certification.",
+  "audited_at_utc": "2026-10-10T01:21:44.893090+00:00",
+  "artifact": "build/native-splitscreen_support.vpk",
+  "sha256": "8e9513d78df6502039baddb38ba0133881ef892efc46be2b2a0f519c9579301e",
+  "bytes": 516156,
+  "entries": 82,
+  "every_entry_matches_stage": true,
+  "all_entry_crc32_valid": true,
+  "installed_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\splitscreen_support.vpk",
+  "installed_matches_build": true,
+  "baseline": "test-results/2026-10-10-menu-text/baseline-native.vpk",
+  "baseline_sha256": "c30e84f65aead6b8ec0a5981bc985d060785118dbb80b8c884ed364562848c74",
+  "added_entries": [],
+  "removed_entries": [],
+  "changed_entries": [
+    {
+      "path": "resource/l4d360uischeme.res",
+      "before_sha256": "59a716d85490af43bcc94c4e4283e2dc9281aa7f33fc4ae608d60669b9afaf5c",
+      "after_sha256": "7ea91f913c5d818f54f635795bbdc9f69641463ea83cdd66f28f14f93ec0d7a0",
+      "removed_properties": [
+        {
+          "path": "/Scheme/BaseSettings/DefaultButton.TextInsetY",
+          "value": "2",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/DialogButton.TextInsetY",
+          "value": "2",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/DropDownButton.TextInsetY",
+          "value": "2",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/MainMenuButton.TextInsetY",
+          "value": "1",
+          "condition": null
+        }
+      ],
+      "added_properties": [
+        {
+          "path": "/Scheme/BaseSettings/DefaultButton.TextInsetY",
+          "value": "3",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/DialogButton.TextInsetY",
+          "value": "3",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/DropDownButton.TextInsetY",
+          "value": "3",
+          "condition": null
+        },
+        {
+          "path": "/Scheme/BaseSettings/MainMenuButton.TextInsetY",
+          "value": "2",
+          "condition": null
+        }
+      ]
+    },
+    {
+      "path": "resource/ui/l4d360ui/gamelobby.res",
+      "before_sha256": "955d5b5da3418832e20260da69e0c836a6934320234b37bbc9a39d2729c5d88d",
+      "after_sha256": "3e6b559c0f76d55effe4670ca3661f3a8d0b46a76a153e250be68ec8d5ebbf36",
+      "removed_properties": [
+        {
+          "path": "/Resource/UI/GameLobby.res/BtnChangeGameSettings/wide",
+          "value": "180",
+          "condition": null
+        }
+      ],
+      "added_properties": [
+        {
+          "path": "/Resource/UI/GameLobby.res/BtnChangeGameSettings/wide",
+          "value": "180",
+          "condition": "$ENGLISH"
+        },
+        {
+          "path": "/Resource/UI/GameLobby.res/BtnChangeGameSettings/wide",
+          "value": "260",
+          "condition": "!$ENGLISH"
+        }
+      ]
+    },
+    {
+      "path": "resource/ui/l4d360ui/survivorlistitem.res",
+      "before_sha256": "776dc2bebbe94b2401af2128fe18a45fd560c09ce1efed47d11a2e6512948f2e",
+      "after_sha256": "3b89b978136fdea40112865cdd5e8226e040d2b2529f61e479866fd8b3d0717f",
+      "removed_properties": [
+        {
+          "path": "/Resource/UI/SurvivorListItem.res/DrpPlayer/BtnDropButton/tall",
+          "value": "15",
+          "condition": null
+        },
+        {
+          "path": "/Resource/UI/SurvivorListItem.res/DrpPlayer/tall",
+          "value": "15",
+          "condition": null
+        }
+      ],
+      "added_properties": [
+        {
+          "path": "/Resource/UI/SurvivorListItem.res/DrpPlayer/BtnDropButton/tall",
+          "value": "22",
+          "condition": null
+        },
+        {
+          "path": "/Resource/UI/SurvivorListItem.res/DrpPlayer/tall",
+          "value": "22",
+          "condition": null
+        }
+      ]
+    }
+  ],
+  "portrait_and_footer_resources_unchanged": {
+    "resource/ui/l4d360ui/dropdowncharacters.res": "0d3516e12b2105dcae46a55ca3869fb121f977131d297682b1e4fc60afaee9dd",
+    "resource/ui/l4d360ui/dropdowncoopcharacters.res": "b59fc105b15b472be77aad0e8e0397594a9e4a6c0128edc7eed04319b3ff954f",
+    "resource/ui/l4d360ui/dropdownversuscharacters.res": "228ca23221b215811e913547da75a99819cb9b6764c30e633c4d5486b6ce3ad5",
+    "resource/ui/l4d360ui/footerpanel.res": "c39994b1297ea4a254181086ac8e92a09f99efd521725116eb09f4522241ec12"
+  },
+  "dll_unchanged": {
+    "native\\build\\Release\\ss_native.dll": "1a3fcee4ca051b26b7ab506ff2a83a0b77d424dade1251f27b3520370de75155",
+    "test-results\\2026-10-10-menu-text\\baseline-ss_native.dll": "1a3fcee4ca051b26b7ab506ff2a83a0b77d424dade1251f27b3520370de75155",
+    "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\ss_native.dll": "1a3fcee4ca051b26b7ab506ff2a83a0b77d424dade1251f27b3520370de75155"
+  },
+  "v27_fallback_unchanged": {
+    "build/splitscreen_support.vpk": "93812da20f57c0208216939501e65f9418f31405136a0e801bb2caa35b42a123",
+    "test-results/2026-10-10-native-lobby/v27-baseline.vpk": "93812da20f57c0208216939501e65f9418f31405136a0e801bb2caa35b42a123",
+    "backup_native/93812da20f57c0208216939501e65f9418f31405136a0e801bb2caa35b42a123.vpk": "93812da20f57c0208216939501e65f9418f31405136a0e801bb2caa35b42a123"
+  },
+  "relevant_tests": {
+    "command": "python -m unittest discover -s tests -p test_native_menu_ui.py -q",
+    "passed": 8,
+    "result": "OK",
+    "basis": "Successful after final shared-scheme helper, reported by source owner; not rerun in package audit.",
+    "source_sha256": {
+      "tools/native_menu_ui.py": "84990db67fda7e8e3bb10e6b9f657ca8a1cfb73100f29263df5bd100b3f35bf5",
+      "tests/test_native_menu_ui.py": "85a7501d1047e61dab446e47138c5721f32ca94212df5c3445499efb935756ae"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+# Copyrighted game data and extracts: reproducible from the install
+# (tools/analysis: extract_game.py, ice.py, strings.py).
+/game_pc/
+/game_vscripts/
+/game_vscripts_dec/
+/strings/
+/cvarlist.txt
+
+# Packages and disc images dropped into the folder.
+/*.vpk
+*.iso
+/xbox_raw/
+/xbox_ui/
+/docs/research/xbox_lobby/vendor/
+
+# Build output.
+/build/
+/dist/
+/plugin/build/
+__pycache__/
+*.pyc
+
+# Crash dumps copied in for tools/analysis/dumpstack.py.
+*.dmp
+*.mdmp
+
+# Bulky captured evidence; the text records stay versioned.
+/docs/test-records/**/*.jpg
+/docs/test-records/**/*.png
+/docs/test-records/**/*.vpk
+/docs/test-records/**/*.dll
+/docs/test-records/**/*.log
+/docs/test-records/**/*.cfg
+/docs/test-records/**/controller-sweep-*.json
+
+# Decrypted Xbox executables (copyrighted, reproducible with docs/research/xbox_lobby tools).
+/docs/research/xbox_lobby/*.pe
+
+# Disassembly listings and resource inventories of the game's files: what the
+# scripts beside the research notes write.
+/docs/research/native_lobby_pc/disassembly.json
+/docs/research/native_lobby_pc/menu_resource_inventory.json
+/docs/research/native_lobby_pc/menu_extras_validation.json
+/docs/research/hud_audit/*-binary-evidence.json
+/docs/research/aim_assist/xbox-evidence.json
+/docs/research/aim_assist/pc-precurve.json
+/docs/research/prompts_votes/vote-hud-resource-comparison-before.json
+/docs/research/ui_coverage/audit.json
+/docs/research/xbox_lobby/xbox_*_trace.txt

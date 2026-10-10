@@ -1,0 +1,88 @@
+{
+  "scope": "Static artifact/source/CTest validation only; no game-runtime certification.",
+  "validated_at_utc": "2026-10-10T02:59:10.151241+00:00",
+  "configuration": "Release",
+  "artifact": "native\\build\\Release\\ss_native.dll",
+  "sha256": "8c172117da20171af5431aed776c9eae4ba1fb659f8ff6bea7a9cd33c48b2c0c",
+  "bytes": 212480,
+  "machine": "0x14c",
+  "pe_format": "PE32",
+  "exports": [
+    "CreateInterface"
+  ],
+  "imports": [
+    "KERNEL32.dll",
+    "SHELL32.dll",
+    "bcrypt.dll"
+  ],
+  "source_sha256": {
+    "CMakeLists.txt": "9990276fcc145e95dd31b01c93e057cb8fb2b5241329963b138f227071d0ccf0",
+    "exports.def": "f810f2caea9404d7730bb5039a34ff525c57e56e00df98191a765ef02db82070",
+    "guest.cpp": "f2a265c406107f25d2f7cf9191de8e0ce4d82ab0f17acdedad647218518fa3a8",
+    "guest.h": "e4e18a7ab5eee9d91823c778a2068a99a422a105bbd10a1294a1c5c067b0eb46",
+    "hooks.cpp": "d15e2f23b0c620480b227b934f5339080d9bfe93f83ea51cd34d549182dd76c6",
+    "hud_inventory.cpp": "3deee005d723e0bbe6f2006765fe3499095e8d091c47a122b1bc5286e4f315e2",
+    "hud_inventory.h": "c93bcb41f29fc182dce221816999d4feef8f706eb120b9919200328c07e922c3",
+    "hud_prompts.cpp": "51033b401442b0387ef643048ea555deda8cedb96322e9db0e1733c3e9253486",
+    "hud_prompts.h": "a333feb760f041979a18c5b6e729ce90f30eaff975f3fac2a822a8f3248bee26",
+    "identity.cpp": "85f3184d1c10aafc08953f59f6be1a7611eed00c943372dc3e64195db4decfef",
+    "identity.h": "094d831b2b053e6a6076b7952f75fff362f56364eeb00dcde15b9ca959bc657e",
+    "include/bridge.h": "c361078a23dfce96516e054cc007aa2f340d4c345d017146ca1ba18a48b5e553",
+    "include/source_plugin_abi.h": "57cea8ddbe3d8d17871b75c1fa8dd319ce0f4837436d700e7addea6228c2a696",
+    "input.cpp": "ad9e4e79d6bff71c518eed3e0c8f1e676265beac1792cacc1d711bcd46e90cba",
+    "input.h": "22e5581c3539191d1cb971c36776c9abfb47dbaeb37a853257ea800191075ce2",
+    "lobby.cpp": "a1deb95395a0fe90b127904f4df0eb05103928f100067d8067cd1e33a6b40687",
+    "lobby.h": "c16afc19ffd406d4efa234b31020d525f2a0b610bc1b7631e6cbd10bcdd12f9b",
+    "presentation.cpp": "e25527ae11905d35de4a4fca8972e43e013e7539afa681fca2cdac1fa31b7356",
+    "presentation.h": "aacab9f9e7c5cfdd52ffaa37507107a19c0f253428d6d22c5f32c40cdc796c65",
+    "safearea.cpp": "9850008ee4d23da04da82e5b9dd473a88cf2e607e35c05541a2069b438e4e62b",
+    "safearea.h": "f9d024d3ebb41e94cb9323b34c6b1394f20abdf7f9f4ea7fbdd9e5d8c94553fb",
+    "src/plugin.cpp": "264c386a4b93106daa5ad8db364118a024b8e374dd79043ae6c8d059437a9be5",
+    "tests/assertions_enabled.h": "2e46a3e13a5ebdef6e7881edb2b401b3ade3bd922ba38e62766c277a2b777452",
+    "tests/guest_abi.cpp": "30efa2c159b890bf02e05501c8c09454de595d3dd6cbe284e49fc58d25977151",
+    "tests/input_abi.cpp": "dfda0ac63b0a88e43a7e7eec853a070effae7c2b53b765c45d63ceaea4f02f63",
+    "tests/safearea_abi.cpp": "64ec80211572776ce79393cfede72546810e6ab5c31368aca35bc5e27995ae0c",
+    "vendor/minhook/include/MinHook.h": "62dff05e63155c6bf8135c36a0d79dedbdcaaede9da26fe38daf0bea34323e38",
+    "vendor/minhook/src/buffer.c": "0ab484d7870c3a8e7a3a1ee61e2070072cf445ed85b619d4c4207fed34356d99",
+    "vendor/minhook/src/buffer.h": "9769702bd625249e59a19ede05c84365fcc7707e1fa0e5df08df42227cee13e3",
+    "vendor/minhook/src/hde/hde32.c": "5da4941e9044f7b325c7f952b5840089e365f374740b7fe7318805d08c0d6c32",
+    "vendor/minhook/src/hde/hde32.h": "5132de5be8ac7a9d054420f5caef0fb01437faa892f03b3cdc77f795973bf15a",
+    "vendor/minhook/src/hde/pstdint.h": "604d1cdf45c5a95bc9cf1bbf39ca05ef83013541101d34971c5cd7577e3d5247",
+    "vendor/minhook/src/hde/table32.h": "43bf687a9fff071b5f46070db4d36c846f8e069cdc57485ee897c499aacdde23",
+    "vendor/minhook/src/hook.c": "edcce4c81985d7dd5b73feae96d6498c8f749b1bca4c3d2d9926ea9a17a84755",
+    "vendor/minhook/src/trampoline.c": "f13a169f803ff5a8e45c58ce668b4377a9878c0fc4452369b8a1325065186b2b",
+    "vendor/minhook/src/trampoline.h": "53ed9934492320617a27bfd952ffe7f5b7a4a1d09963d4512447082fe7b727b4"
+  },
+  "validation_tools_sha256": {
+    "native/build.ps1": "c4837dc222bf98615a70c0d890b9cca8891b57188f95783472f5f768f95fbb9b",
+    "tools/validate_native_build.py": "e34d36861ddde0525f6be8392afd88af0630de84968a2fab45c6703bdb8cf994"
+  },
+  "ctest": {
+    "log": "native\\build\\Testing\\Temporary\\LastTest.log",
+    "log_sha256": "bf28c6ddbfc712d95e9b4bab52ff6d22144064b5559ec3233dad633e9d060402",
+    "log_modified_utc": "2026-10-10T02:59:10.005657+00:00",
+    "tests": {
+      "guest_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\guest_abi_test.exe",
+        "sha256": "5fdf51676bc85eec91fe83e2cfec8cb48f16b4e2b4838557e9dd9a9d9cae9022"
+      },
+      "input_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\input_abi_test.exe",
+        "sha256": "cad07532ac62329ea580f391480ebc85b7d50ae738ba7c0f7f593ac8d80254c5"
+      },
+      "safearea_abi": {
+        "status": "passed",
+        "executable": "native\\build\\Release\\safearea_abi_test.exe",
+        "sha256": "5d0765f260ab9e109d0b4e4a47b98626d6b806754ce7a8fccd4158d60f73080e"
+      }
+    }
+  },
+  "checks": {
+    "source_not_newer_than_dll": true,
+    "tests_not_older_than_dll_or_fixtures": true,
+    "all_required_ctests_passed": true,
+    "dll_and_source_stable_during_validation": true
+  }
+}

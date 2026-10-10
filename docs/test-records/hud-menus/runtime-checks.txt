@@ -1,0 +1,40 @@
+Xbox HUD/menu audit baseline, 2026-10-10
+
+Starting artifacts: DLL51b3bee87c9c40783e014ee5b5d1491611352a9a74bfc45acc2756a4f5613fb5; VPK3ebe7395d3dba6ba955f1b1440e536f8b1344618877bb5d045ec5de952b1a9f1. Backups and user config snapshot are stored here.
+Starting state: owned offline Realism, Dead Center chapter1 Normal, both avatar choicesRandom. Test selects Nick/Rochelle.
+
+Baseline engine captures1600x900:
+- hud_baseline_horizontal.jpg: PC vertical inventory stack; HUD pressed to outer edges; native shared Coach/Ellis band crosses horizontal divider.
+- hud_baseline_vertical.jpg: corresponding vertical split; shared teammate band straddles center at bottom. Restored ss_splitmode1 after capture.
+- hud_baseline_scoreboard.jpg: co-op/Realism scoreboard and current native Xbox hint assets.
+- menus_baseline_difficulty.jpg: compact difficulty rows; grey modal border is authentic Xbox native code, not a PC-only artifact.
+- menus_baseline_chapter.jpg and menus_baseline_audio.jpg: remaining menu layouts before corrections.
+
+The baseline session ran idle long enough for native AFK handling to take over guest after the vertical capture. This preceded candidate installation. Native ReturnToLobby vote restored both owned local members and saved Nick/Rochelle choices. No physical input test performed this turn.
+26 existing Python tests passed after integrating the extras and native HUD resource helpers. Native build/runtime verification pending.
+
+First live candidate: DLL c9b3c234 / VPK a383f7c9, installed hashes verified.
+- Owned offline Realism started with Nick/Rochelle. Native status supported/enabled, routing guard1 joystick1 split2, global panel_test_title_safe stayed0.
+- Horizontal and vertical HUD captures show restored inventory cross and exterior safe-area bounds. P1 moved/picked up axe and medkit through native input commands; selected medkit has native green highlight. Flashlight toggled independently. No physical controller test repeated.
+- Scoreboard, difficulty, campaign/chapter, controller settings and button diagram captured without new clipping in main content. Lastinv hint absent; live read-only probe by HUD owner found empty PC binding buffer, follow-up correction pending.
+- Existing PC audio/video/multiplayer menu height placed headings above screen under console frame/footer layout. German audio/keyboard labels collide with value columns. These existed before this candidate (baseline audio capture); additional resource correction pending.
+- Native ReturnToLobby restored mode/campaign/chapter/difficulty and Nick/Rochelle.
+- Explicit disable logged refreshed bounds bridge0, removed hooks/owned guest/session, restored guard0 joystick0 split15. Re-enabling then crashed during GameUI refresh at03:47:56; dump captured in game root. Safearea owner investigating; do not call lifecycle verification passed.
+- Config compare after controller-menu visit: only joy_advanced and joy_advaxisr/u/x/y changed from saved zeros to native360 defaults. Restore these five original values after final test exit. joystick preference stayed0.
+
+Revised menu/lifecycle build934a69c7 + VPKccc7ec07:
+- User requested The Parish test before changing hint behavior. Loaded owned co-op c5m1_waterfront with native Nick/Rochelle, preserving original DrawBinding source hash9eafec4f. User picked up primary+secondary and confirmed: Still no Y hint. Saved hud_parish_two_weapons_no_hint.jpg.
+- Audio, Keyboard/Mouse, Multiplayer headings now fully visible and long German labels separated from sliders/values. Captured menus_verified_audio/keyboardmouse/multiplayer.jpg. Expanded Video fits; third-party credits spacing was then tightened separately, pending final rendering.
+- Normal quit preserved input preferences. Only differences from start snapshot: joystick numeric serialization0.000000→0 and native map sky c1→c5. Five native-controller-preview defaults had already been restored exactly before this launch.
+
+Final candidate92fedfcc + VPK911258e3 installed;198144/589203 bytes. Clean build3CTests passed, 88-entry VPK/stage/installed/fallback audit passed. Added --clean-first to native build because restoring reviewed source with preserved timestamps could otherwise reuse a previous object; corrected before final installation.
+- Enabled build created two-member lobby. Explicit disable succeeded, removed guest/session, restored guard0 joystick0 split15, panel_test_title_safe0. Re-enable succeeded without reload crash and created another two-member lobby.
+- Returned to user-requested Parish co-op for final HUD hint rendering. Binding adaptation now reads actual device bindings; display only, no input/cvar writes.
+
+Final8e498ecb font/readability verification:
+- hud_verified_final.jpg and hud_verified_final_vertical.jpg show yellow controllerY and readable keyboardQ at the original native anchor, with the restored D-pad cross and outer safe-area margins. Native logs identify actual bindings Y_BUTTON and q. No new clipping observed. Returned ss_splitmode to1 afterward.
+- Final startup is owned co-op The Parish chapter1 Normal, Nick/Rochelle, guard1 joystick1 split2, sv_cheats0. Game left running at the opening area for the user.
+- Final Video captures menus_verified_video.jpg and menus_verified_video_advanced.jpg use VPK911258e3: title visible, all controls fit, and third-party credits separated from footer help.
+- Disable/re-enable was tested twice on92fedfcc with identical lifecycle code: from fresh lobby and with a loaded Parish game. Both restored input/session state and re-enabled safely. The latter ReturnToLobby vote was not completed before explicitdisable and is not counted as a new return-vote pass.
+- Installed final DLL/VPK match build and recorded source manifest. Native clean build all3CTests passed; Python26 suite and finalVideo8 checks passed. Existing v27 fallback unchanged.
+Final handoff: while documentation was saved, the native inactivity timeout placed P1 into AFK spectator mode. Issued native jointeam2 and left the normal pause menu open; P1 takeover after resume was not re-verified. The user can resume and use the displayed controller trigger prompt. This is native idle handling, not a renewed physical-input test.

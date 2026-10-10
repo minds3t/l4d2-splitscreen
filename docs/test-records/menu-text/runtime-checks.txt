@@ -1,0 +1,22 @@
+Menu text alignment investigation, 2026-10-10
+
+Baseline: DLL1a3fcee4, VPKc30e84f6. Engine screenshots1600x900.
+- text_before.jpg: German settings caption clipped at the right edge; Player name descenders clipped; Start Game caption ink y569..585 over selection strip y563..600.
+- Resource candidate VPK8e9513d7 fixes localized settings width and both player dropdown clip bounds. text_after.jpg visibly shows full German caption and both Player names.
+- Candidate's four scheme TextInsetY changes produced no pixel movement. text_after_reload_focused.jpg confirms ui_reloadscheme also did not move caption ink (y569..585).
+- Live read-only process inspection confirms cached L4D360UIScheme has stock PC insets, not the packaged scheme. Native scheme is loaded before later addon path reload. See docs/research/native_lobby_pc findings and hybrid_button_alignment evidence.
+- Pre-restart bridge status enabled/supported/insecure1, owned offline Realism two members, controller guard1/joystick1/split2, cheats0. Saved config matches config.before.cfg byte for byte (5683373a0ef65c9d75d392ea4c4bd8aec0dc6e7da6f5caa7e75dcc0d75ace798).
+
+The resource-only candidate above was superseded; final native painter verification follows below.
+
+Final verified build: DLL51b3bee87c9c40783e014ee5b5d1491611352a9a74bfc45acc2756a4f5613fb5 (187904 bytes), VPK3ebe7395d3dba6ba955f1b1440e536f8b1344618877bb5d045ec5de952b1a9f1 (517106 bytes).
+- Fresh launch logs confirm new local-menu paint hook installs. Main style1: previous0 -> logical1/scaled1; Default style0 and Dropdown style3: previous0 -> logical2/scaled3. The prior field value is restored after each paint.
+- text_final_lobby.jpg: complete Spieleinstellungen ändern; Player and Player(2) descenders readable. Start Game white ink now y572..588, +3px from baseline y569..585. Weighted ink center580.13 versus baseline577.13; selection strip remains y563..600. No extra optical adjustment beyond the ISO values.
+- text_final_settings.jpg: Chapter label and value fit the selected strip. Footer alignment retained. Escape returns to shared lobby and full German settings caption remains visible inside highlight.
+- Character flyout inspected: 64x64 portrait remains contained; flyout row spacing unchanged. Mouse chose Rochelle for player2, player1 remained Random; native status confirmed only guest avatar=producer changed. Then diagnostic avatar set player1=Nick for startup smoke check.
+- Native Realism startup c1m1_hotel: P1human Nick/entity1; P2human Rochelle/entity2; guest split1 linked to host; in_forceuser1, guard1, joystick1, split2, sv_cheats0. No physical controller test repeated; prior user confirmations remain historical.
+- text_final_pause.jpg: full German pause labels and aligned native footer. Pause opened through gameui_activate; no new physical Escape claim.
+- Native ReturnToLobby vote restored Realism/DeadCenter/chapter1/Normal and both selected avatars; owned offline lobby remains two members, input re-armed guard1/joystick1/split2.
+- Existing8 resource tests and2 native CTests passed; final installed files match audited artifacts. No new tests added for the reversible resource bounds changes.
+- After closing previous candidate before installation, original user cfg remained byte-identical (SHA2565683373a0ef65c9d75d392ea4c4bd8aec0dc6e7da6f5caa7e75dcc0d75ace798).
+- Left the updated Realism lobby open and restored both avatar choices to Random, matching the state before this visual test.

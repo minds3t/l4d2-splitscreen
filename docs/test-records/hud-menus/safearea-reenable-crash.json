@@ -1,0 +1,49 @@
+{
+  "scope": "Read-only post-mortem of the c9b3 build crash; source repair unit-tested but live re-enable regression remains pending.",
+  "analyzed_at_utc": "2026-10-10T01:50:21.185525+00:00",
+  "dump": "C:\\Program Files (x86)\\Steam\\dumps\\crash_left4dead2.exe_20261010034756_1.dmp",
+  "dump_sha256": "a78636cb59c72454192662dc6c5cca22e255ba429d548b71a19cc82ce51dc904",
+  "exception_code": "ExceptionCode.EXCEPTION_ACCESS_VIOLATION",
+  "exception_address": "gameui.dll+0x50091",
+  "exception_context": {
+    "Eip": "0x62de0091",
+    "Esp": "0xd6d8bc",
+    "Ebp": "0xd6db48",
+    "Eax": "0x0",
+    "Ecx": "0x643b923c",
+    "Esi": "0x84b4e00"
+  },
+  "selected_stack_words": [
+    {
+      "stack_offset": "0x290",
+      "module_address": "ss_native.dll+0x8bdf"
+    },
+    {
+      "stack_offset": "0x2a0",
+      "module_address": "gameui.dll+0x4fcf2"
+    },
+    {
+      "stack_offset": "0x530",
+      "module_address": "gameui.dll+0xeb6c"
+    },
+    {
+      "stack_offset": "0x540",
+      "module_address": "gameui.dll+0x161b5"
+    },
+    {
+      "stack_offset": "0x54c",
+      "module_address": "ss_native.dll+0x573b"
+    },
+    {
+      "stack_offset": "0x57c",
+      "module_address": "ss_native.dll+0x229e"
+    }
+  ],
+  "stack_note": "Words read from the exception-context stack, not a symbolized stack unwind.",
+  "native_fault": "GameUI+5008F calls verified MatchFramework v9 GetMatchSession; GameUI+50091 immediately reads [EAX]. EAX=0 in the exception context, proving the active GameLobby reload had no live matchmaking session.",
+  "trigger": "Explicit disable restored bounds and closed the owned session. On re-enable, ui_reloadscheme reinitialized a surviving GameLobby panel even though the session had already ended.",
+  "repair": "Enable Refresh now returns without reloading resources. Explicit disable keeps separate HUD restoration and reloads menu resources only if verified Framework v9 still returns a live session.",
+  "resource_audit": "No positive title-safe flags in current main-menu, lobby, footer or pause resources. Four PC option pages use only zero flags. Difficulty-vote dialog positive flags belong to a live game/session. Client HUD/scoreboard/chat use the separate client callback.",
+  "validation": "MSVC Win32 /W4 compilation and extended safearea ABI fixture passed: 32 machine-state dispatch cases plus enable no-op, no-session skip, live-session refresh, missing interfaces, callback reentry and shutdown. Root independently reviewed the lifecycle repair.",
+  "runtime": "Pending rebuilt DLL and repeated disable/re-enable/return sequence. No renewed physical input test."
+}

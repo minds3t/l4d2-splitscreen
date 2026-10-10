@@ -1,0 +1,102 @@
+{
+  "scope": "Read-only exact-build PC client/server audit. No native source, bindings, cvars, game state or configuration changed by this audit.",
+  "modules": {
+    "client_sha256": "c0a8e1e88f7312db11bcfd4b0ec574d224a34b2d9a615d6088b28335eeb4af1f",
+    "server_sha256": "a93ec916a8f26fbea85688c321d2ba8dd346d435fab09a0b926dd950c2e1ea12"
+  },
+  "registered_cvars": {
+    "joy_autoaimdampen": {
+      "client_object_rva": "7595E8",
+      "registration_rva": "501070",
+      "default": "0",
+      "flags": "0x280",
+      "help": "How much to scale user stick input when the gun is pointing at a valid target."
+    },
+    "joy_autoaimdampenrange": {
+      "client_object_rva": "7595A0",
+      "registration_rva": "501040",
+      "default": "0",
+      "flags": "0x80",
+      "help": "The stick range where autoaim dampening is applied. 0 = off"
+    },
+    "cl_autoaim": {
+      "client_object_rva": "759B40",
+      "registration_rva": "501400",
+      "default": "1",
+      "flags": "0x8280",
+      "help": "Set to 1 to use autoaim on joysticks, 0 to disable"
+    },
+    "cl_inputmode": {
+      "client_object_rva": "75A460",
+      "registration_rva": "501730",
+      "default": "0",
+      "flags": "0x8210",
+      "observed_writers": "Joystick look12FD00 sets selected slot1; mouse135940 sets selected slot0 when mouse deltas occur; Steam input paths also write2."
+    },
+    "sk_autoaim_mode": {
+      "server_object_rva": "7F7FB8",
+      "registration_rva": "588580",
+      "default": "1",
+      "flags": "0x2080",
+      "xref_result": "Only ctor588590/dtor5B21F1 reference the object; string has only registration reference58858B. No value/parent read found anywhere in supported server image. Not consulted by traced target eligibility/scan."
+    },
+    "autoaim_max_dist": {
+      "server_object_rva": "7FE838",
+      "registration_rva": "58B1B0",
+      "default": "2160",
+      "flags": "0",
+      "value_reads": "16C82F and173F62 read parent7FE854 float+2C."
+    }
+  },
+  "client_damping": {
+    "helpers": [
+      "12F900",
+      "12FB10"
+    ],
+    "caller": "12FD00 (called by joystick response paths at130B59/130CFE and1369AC/136A73)",
+    "slot": "EDI in helpers; explicit slot argument in12FD00. Split cl_autoaim refs are indexed by slot*8.",
+    "conditions": "cl_autoaim(slot)!=0, joy_autoaimdampen>0, abs(raw stick)<joy_autoaimdampenrange, current local player non-null and byte player+128C true.",
+    "effect": "Multiply transformed stick look input by dampen, otherwise1. Both look-response helpers retain the same target-dependent scaling. Mouse delta path does not call these helpers.",
+    "platform_gate": "No Xbox or Steam Input platform predicate appears in the helpers.",
+    "target_reads": [
+      "12FA7A GetLocalPlayer(-1),12FA86 flag+128C",
+      "12FC43 GetLocalPlayer(-1),12FC4F flag+128C"
+    ]
+  },
+  "server_target_path": {
+    "eligibility_rva": "16A510 (player vtable+70C)",
+    "eligibility": "Reject player predicate+774 (human base false, bot implementations true) and non-survivor team. Engine predicate+1F8 can bypass userinfo check. Otherwise reads this player cl_autoaim via IVEngineServer v56 and requires1, reads cl_inputmode and requires>0; multiplayer fallback rejects mouse input.",
+    "producer": "173EC2..173FD5: eligibility, per-player userinfo joy_autoaimdampen>0, active weapon and timer; player vtable+6FC=1798E0 scans using176BF0; copies output params+2A into network player+1AD5.",
+    "network": "Server m_Local offset1A44 plus member91 =1AD5. Client m_Local offset11A4 plus memberE8 =128C.",
+    "remaining": "Live target-flag transitions and native damping eligibility during an infected sweep remain to be observed; no runtime setting change is proposed before that proof.",
+    "gamerules_verified": {
+      "live_reference": "research/aim_assist/gamerules-smoke.json",
+      "vtable_rva": "68E9D4",
+      "virtual124": "1203C0 reads ConVar parent7F741C, registered mp_autocrosshair at587DD0; unrelated to sk_autoaim_mode.",
+      "virtualB4": "FD0C0 compares supplied skill with virtualB8 FD0E0 -> global7F9A2C. Only the single-player fallback reaches it after per-player inputmode check fails.",
+      "sk_autoaim_mode": "No direct or traced indirect gate uses this cvar in target eligibility/scan."
+    }
+  },
+  "read_only_probe_contract": {
+    "local_players": "Read pointer client+726BD8+slot*4 for slot0/1. Function634E0 confirms direct array; -1 resolves engine active split slot before lookup.",
+    "target_flag": "Read player+128C only for valid live local player.",
+    "cl_autoaim_ref": "Two lazy caches: helper12F900 uses ConVar pointer client+759C64+slot*8; helper12FB10 uses client+759C88+slot*8. Read pointed ConVar int+30. joy_response_look1 chooses the second helper, so the first cache may legitimately remain null.",
+    "cl_inputmode_ref": "Read ConVar pointer client+759CAC+slot*8, then value+30.",
+    "ref_construction": "3D4660 names slot0 base, slot1 base2, then base3/base4. FindVar ConVar+18 stored in first pointer; unadjusted ConVar stored second pointer+4 at3D470B. No extra indirection for second-pointer value read.",
+    "validation": "Verify ref ConVar name at+0C. Null/uninitialized refs and fallback alias-to-slot0 must be reported, not guessed. Static dampen/range ConVars use parent+1C then float+2C.",
+    "optional_gamerules": "Read server+7F7F6C pointer then vtable entries+124/+B4 for static follow-up; no function invocation needed."
+  },
+  "root_live_baseline": {
+    "source": "Root netconsole observations during current task; no aim settings changed.",
+    "cl_autoaim": "1",
+    "cl_autoaim2": "1",
+    "joy_autoaimdampen": "0.3",
+    "joy_autoaimdampenrange": "0.85",
+    "sk_autoaim_mode": "0",
+    "cl_mouselook": "1",
+    "cl_mouselook2": "1",
+    "cl_inputmode_after_physical_pad_movement": "1",
+    "cl_inputmode2_keyboard": "0"
+  },
+  "minimal_route": "First measure existing native target transitions and stick damping. Baseline already has ISO damping values and correct device classification. Do not change sk_autoaim_mode or mouse look merely because legacy360cfg did; neither is an identified missing gate in the traced PC chain. Any repair should be justified by live gate failure and scoped to owned offline controller slots."
+}

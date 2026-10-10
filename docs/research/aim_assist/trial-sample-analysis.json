@@ -1,0 +1,84 @@
+{
+  "source": "test-results\\2026-10-10-aim-assist\\controller-sweep-xbox-trial.json",
+  "sha256": "e738b665b0536567c98018b5c15671547f821785a045ef072032aa777082eb51",
+  "elapsed_seconds": 90.0002,
+  "samples": 1800,
+  "caveat": "Raw XInput fraction is a diagnostic proxy, not the exact post-deadzone native response argument. Sampled eligibility does not directly measure applied angular multiplier.",
+  "players": [
+    {
+      "slot": 0,
+      "target_true_samples": 120,
+      "moving_samples": 589,
+      "target_and_moving_samples": 75,
+      "target_and_moving_both_raw_axes_below_0_85_samples": 66,
+      "first_target_seconds": 26.0002,
+      "last_target_seconds": 60.4505,
+      "inputmode_values": [
+        1
+      ],
+      "autoaim_values": [
+        1
+      ],
+      "xinput_packets_seen": 926,
+      "example_target_moving_below": [
+        {
+          "seconds": 26.0002,
+          "right_x": 8924,
+          "right_y": -20493,
+          "target": true,
+          "inputmode": 1,
+          "cl_autoaim": 1
+        },
+        {
+          "seconds": 26.6503,
+          "right_x": -21327,
+          "right_y": 9198,
+          "target": true,
+          "inputmode": 1,
+          "cl_autoaim": 1
+        },
+        {
+          "seconds": 27.3003,
+          "right_x": -22477,
+          "right_y": 1621,
+          "target": true,
+          "inputmode": 1,
+          "cl_autoaim": 1
+        },
+        {
+          "seconds": 31.9501,
+          "right_x": -7963,
+          "right_y": 12322,
+          "target": true,
+          "inputmode": 1,
+          "cl_autoaim": 1
+        },
+        {
+          "seconds": 32.0002,
+          "right_x": -8678,
+          "right_y": 15754,
+          "target": true,
+          "inputmode": 1,
+          "cl_autoaim": 1
+        }
+      ]
+    },
+    {
+      "slot": 1,
+      "target_true_samples": 0,
+      "moving_samples": 0,
+      "target_and_moving_samples": 0,
+      "target_and_moving_both_raw_axes_below_0_85_samples": 0,
+      "first_target_seconds": null,
+      "last_target_seconds": null,
+      "inputmode_values": [
+        0
+      ],
+      "autoaim_values": [
+        1
+      ],
+      "xinput_packets_seen": 1,
+      "example_target_moving_below": []
+    }
+  ]
+}

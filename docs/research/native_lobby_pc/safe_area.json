@@ -1,0 +1,85 @@
+{
+  "scope": "Static PC/ISO comparison, isolated x86 ABI/lifecycle tests, and root live HUD/lifecycle validation. The c9b3 re-enable crash was diagnosed and the repaired lifecycle passed subsequent lobby and gameplay tests.",
+  "source_files": [
+    "native/safearea.cpp",
+    "native/safearea.h",
+    "native/tests/safearea_abi.cpp"
+  ],
+  "fingerprints": {
+    "pc_gameui_sha256": "321ec9b5865582330af61e81eb347da31cc213cc6c95b80d6d98170b8a5fbb40",
+    "pc_client_sha256": "c0a8e1e88f7312db11bcfd4b0ec574d224a34b2d9a615d6088b28335eeb4af1f",
+    "xbox_client_extracted_pe_sha256": "3d6b0289cbd0fd4bda79652fa05256d39414f8f82b8756516465ffae61e01703"
+  },
+  "discovery": {
+    "safezonex_safezoney": "No matching cvars in this build; neither is used by the identified layout code.",
+    "panel_test_title_safe": "Read-only live query returned 0 and cheat flag. This PC-only gate encloses the retained title-safe layout calculation. The implementation never changes the cvar.",
+    "mat_drawtitlesafe": "Unknown console command in the running build. A separate engine binary overlay is unrelated to resource layout.",
+    "resource_contract": "usetitlesafe absent/0 leaves the resource unchanged; 1 selects 5%, values greater than 1 select 7.5% of the full display surface.",
+    "existing_resource_flags": "HUD resources already mark the intended controls, including CHudLocalPlayerDisplay, CHudTeamDisplay and AbilityTimer. Current MainMenu, GameLobby, FooterPanel and InGameMainMenu resources have no usetitlesafe flag. No new flags are added."
+  },
+  "xbox_evidence": {
+    "gameui_panel_applysettings_va": "0x840c5a00",
+    "full_surface_dimensions_va": "0x840c5aac..0x840c5b64",
+    "resource_flag_parse_va": "0x840c5e48..0x840c5ea8",
+    "edge_aware_adjustment_va": "0x840c5ea8..0x840c6048",
+    "stretch_dimension_reduction_va": "0x840c6350..0x840c63bc",
+    "float_constants": {
+      "0.05": "0x840059a8",
+      "0.075": "0x8401e930"
+    },
+    "client_panel_applysettings_va": "0x886476e8",
+    "client_resource_flag_parse_va": "0x88647b30",
+    "pc_only_difference": "The Xbox path reads the resource flag directly without the PC panel_test_title_safe cvar gate."
+  },
+  "pc_evidence": {
+    "gameui_panel_applysettings_rva": "0xd9330",
+    "client_panel_applysettings_rva": "0x3f2e10",
+    "instruction_bytes": "39 79 30 0f 84 23 01 00 00",
+    "instruction_meaning": "cmp dword ptr [ecx+0x30],edi; je +0x123 (EDI is zero and ECX is the ConVar parent)",
+    "gameui_gate_rva": "0xd9648",
+    "gameui_retained_branch_rva": "0xd9651",
+    "gameui_skip_target_rva": "0xd9774",
+    "client_gate_rva": "0x3f3128",
+    "client_retained_branch_rva": "0x3f3131",
+    "client_skip_target_rva": "0x3f3254",
+    "native_algorithm": "Obtain viewport dimensions, temporarily remove the surface-size override to read the full display dimensions, then restore the override. Compare viewport origin and parent dimensions to identify outside edges. Apply the selected percentage only on outside edges; centered anchors remain centered. Native f/stretch dimensions also shrink by the applicable insets.",
+    "example_1600x900_horizontal_split": "For usetitlesafe=1, the native calculation uses 80-pixel outer left/right and 45-pixel outer top/bottom margins. The shared horizontal divider receives no extra 45-pixel inset.",
+    "engine_copy_not_hooked": "An engine.dll Panel copy exists at RVA0x2b2970, but this patch is limited to GameUI menus and client HUD layouts."
+  },
+  "implementation": {
+    "menu_scope": "Installed and lobby::UseConsoleMenuPresentation(): explicitly enabled bridge and an owned offline session, or disconnected no-session main menu.",
+    "hud_scope": "Installed, explicitly enabled bridge, and lobby::HasOwnedOfflineSession().",
+    "owned_behavior": "Skip only the PC test-cvar comparison and enter the original resource-flag lookup and native title-safe calculation.",
+    "unowned_behavior": "Execute the original comparison/jump through the MinHook trampoline, retaining the native test-cvar behavior.",
+    "machine_state": "Naked x86 guards preserve all GPRs, EFLAGS, stack, x87 and SSE state using pushfd/pushad and an aligned 512-byte FXSAVE/FXRSTOR region.",
+    "configuration": "No cvar, config file, input routing, font, resource flag or persistent panel setting is written.",
+    "fingerprint_gate": "Both module accessors require matching complete binary hashes, and Install additionally verifies the exact nine-byte gate and callback prefixes."
+  },
+  "refresh_lifecycle": {
+    "hud_reload_callback": "client+0xc2bc0, cdecl void(), prefix55 8b ec 83 ec 24. The native callback iterates both local client modes with its own split-screen context guard and also handles the full-screen mode.",
+    "menu_reload_callback": "GameUI+0x16130, cdecl void(), prefix55 8b ec 51. Reloads active-frame resources; shared-scheme reload remains the original no-op.",
+    "enable": "Install before input::Enable. Refresh is a no-op while enabled; subsequent native resource creation uses the installed gates without reinitializing a stale lobby.",
+    "explicit_disable": "Clear bridge enabled flag first, then Refresh before teardown. HUD restoration requires observed owned HUD use and readable client globals. Menu restoration additionally requires observed menu use and a non-null native MatchFramework v9 session. Remove hooks, then Shutdown.",
+    "normal_process_unload": "Remove hooks and Shutdown without a late resource reload; UI interfaces may already be torn down.",
+    "callback_guards": "Refresh rejects recursion, checks native interface objects and skips all enabled calls. Native GameLobby reload is forbidden without a live matchmaking session even when the cached panel is readable."
+  },
+  "verification": {
+    "independent_review": "native_ui independently verified both instruction gates and continuations, original resource-flag execution, native callback ABI, register/FPU state preservation, scope and cleanup ordering; passed.",
+    "compile": "Standalone MSVC Win32 C++17 /W4 /EHsc /Od /UNDEBUG compile succeeded without diagnostics.",
+    "isolated_abi_test": "32 menu/HUD dispatches across installed, enabled, menu-context and owned-session combinations passed. Each compares all seven general registers, EFLAGS, ESP and all 512 saved floating-point/SSE bytes. The logging double deliberately clobbers x87/XMM state. Missing-module install refusal and post-Shutdown refresh are also checked.",
+    "runtime": {
+      "basis": "Root live reports and screenshots in test-results/2026-10-10-hud-menus; runtime-checks.txt retains chronological evidence.",
+      "safe_area_visuals": "c9b3 captures show exterior HUD padding in horizontal/vertical layouts while panel_test_title_safe remains0. Native inventory/selection and scoreboard were captured.",
+      "lifecycle_regression": "Repaired build92fedfcc passed disable/re-enable from a fresh lobby and from live Parish gameplay. Explicit disable closed the owned session, restored input settings, and re-enable did not crash. Final8e498ecb has the same lifecycle code; its only change is the keyboard hint font.",
+      "return_vote_limit": "Earlier c9b3 native return restored settings/avatars. The later second ReturnToLobby vote did not complete while UI was active before explicit disable; it is not counted as a repeat return-vote pass.",
+      "options_visuals": "All four option pages have visible headings/readable German labels; expanded/collapsed Video and final footer-help spacing verified.",
+      "remaining_visual": "Final8e498ecb horizontal/vertical captures confirm readable Y and keyboard Q; HUD geometry and exterior margins retained.",
+      "configuration": "Normal quit on934a69c7 preserved input values after controller-preview defaults were restored. Only numeric serialization of joystick0 and native map-sky value differed; not byte-identical.",
+      "physical_coverage": "User verified missing original hint after two weapons in Parish; second physical controller remains unavailable. No claim that full physical input regression was repeated for every build."
+    },
+    "integrated_build": "Current clean build DLL8e498ecb500ad1ba79a7771e3582a10883a71d7d7fb1b5a7b7eea3f4d5772536 (198144 bytes): guest_abi, input_abi and safearea_abi passed; manifest and final-package-evidence record current source/artifact checks. Root reports 26 Python tests and eight final Video-focused tests passed.",
+    "installed_artifacts": "Final-package-evidence.json records installed/build identity for DLL8e498ecb and VPK911258e36b16848d4f5d6284d6ffb49c21a93015a8811f4e6e9a21775bb57500 (589203 bytes,88 entries).",
+    "c9b3_runtime_failure": "Root observed successful disable after return, followed by re-enable crash. Dump proves GameUI+50091 null GetMatchSession dereference while ui_reloadscheme rebuilt a surviving GameLobby. See test-results/2026-10-10-hud-menus/safearea-reenable-crash.json.",
+    "repair_fixture": "Extended safearea_abi passes enable no-op, no-session menu skip, live-session refresh, missing interface guards, synchronous callback reentry and post-shutdown inactivity, plus the original 32 register/flags/stack/x87/SSE preservation cases."
+  }
+}

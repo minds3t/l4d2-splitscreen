@@ -1,0 +1,2 @@
+# Batch files must keep Windows line ends, also in a checkout that normalizes them.
+*.cmd text eol=crlf

@@ -1,0 +1,21 @@
+Wrote 'screenshots/ss_aim_v32_final.jpg':  24.88 MB (3840x2160) compresssed (quality 90) to 1.26 MB
+
+[ss_native] LevelShutdown
+
+Dropped Player from server (Server shutting down)
+
+[ss_native] [input] Archived input protection prepared=1 restoredLive=1; saved joystick=0 lowend=0.649999976 accelscale=3 accelmax=4 pitch/yaw=1/-1.5,1/-1
+
+[ss_native] [input] Archived pitch threshold protected: saved=0.100000001
+
+Host_WriteConfiguration: Wrote cfg/config.cfg
+
+UpdateSystemLevel: ConVar mat_queue_mode controlled by gpu_level/cpu_level must not be marked as FCVAR_ARCHIVE or FCVAR_CHEAT!
+
+CAsyncWavDataCache:  341 .wavs total 0 bytes, 0.00 % of capacity
+
+Duplicate sequence 3 in sheet file
+
+[ss_native] [guest] Removed the plugin-owned offline guest profile
+
+

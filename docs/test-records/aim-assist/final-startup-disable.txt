@@ -1,0 +1,73 @@
+[ss_native] [input] active=1 restorePending=0 readable=1 guard=1 joystick=1 split=2
+
+[ss_native] [input] responseReadable=1 lowend=0.75 accelscale=2 accelmax=1 saved=0.649999976/3/4
+
+[ss_native] [input] sensitivityReadable=1 pitch/yaw1=0.800000012/-2.25 pitch/yaw2=0.800000012/-2.25 saved=1/-1.5,1/-1
+
+[ss_native] [input] pitchThresholdReadable=1 pitchthreshold=0 saved=0.100000001
+
+"joy_pitchthreshold" = "0.000000" ( def. "0.15" )
+
+ client archive
+
+"joy_pitchsensitivity" = "0.800000" ( def. "1" )
+
+ client archive ss
+
+"joy_pitchsensitivity2" = "0.800000" ( def. "1" )
+
+ client archive ss_added
+
+"joy_yawsensitivity" = "-2.250000" ( def. "-1" )
+
+ client archive ss
+
+"joy_yawsensitivity2" = "-2.250000" ( def. "-1" )
+
+ client archive ss_added
+
+[ss_native] [safearea] Disabled resource bounds restored where live contexts remain
+
+[ss_native] [input] Restored menu input: joystick=0 (1), split=15 (1), guard=0 (1)
+
+[ss_native] [input] Restored response preferences: lowend=0.649999976 (1), accelscale=3 (1), accelmax=4 (1)
+
+[ss_native] [input] Restored sensitivity preferences: pitch/yaw1=1 (1)/-1.5 (1), pitch/yaw2=1 (1)/-1 (1)
+
+[ss_native] [input] Restored pitch threshold=0.100000001 (1)
+
+[ss_native] Disabled; hooks removed and cleanup attempted
+
+"joy_lowend" = "0.650000" ( def. "1" )
+
+ client archive
+
+"joy_accelscale" = "3.000000" ( def. "0.6" )
+
+ client archive
+
+"joy_accelmax" = "4.000000" ( def. "1.0" )
+
+ client archive
+
+"joy_pitchthreshold" = "0.100000" ( def. "0.15" )
+
+ client archive
+
+"joy_pitchsensitivity" = "1.000000" ( def. "1" )
+
+ client archive ss
+
+"joy_yawsensitivity" = "-1.500000" ( def. "-1" )
+
+ client archive ss
+
+"joy_pitchsensitivity2" = "1.000000" ( def. "1" )
+
+ client archive ss_added
+
+"joy_yawsensitivity2" = "-1.000000" ( def. "-1" )
+
+ client archive ss_added
+
+

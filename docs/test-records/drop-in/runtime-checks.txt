@@ -1,0 +1,499 @@
+Drop-in / drop-out runtime checks, 2026-10-10 17:07-17:40
+DLL 8c7f1349a136d13cf0cbed4e185c81fe9b80afb39bab56282e73f76990458123, package version 34
+Game 2.2.4.3 build 10097, 3840x2160 borderless, German client, controller 1
+connected (keyboard/mouse = player 2), c1m1_hotel coop. Menus driven with
+injected key presses, state read through netcon `status`.
+
+Passed
+- Pause > Options > "Bildschirmteilung deaktivieren": "Dropped Player (2) from
+  server (leaving splitscreen)", status 1 human, full-screen view, a bot on
+  player two's survivor (left.jpg).
+- Pause > Options > "Bildschirmteilung aktivieren": player two reconnects,
+  script logs "Player 2 rejoined" then "Player 2 is back in the game", status
+  2 humans, the same survivor, split view and both HUDs back (rejoined.jpg).
+- Two leave/rejoin cycles in one game with the engine-side join, one cycle
+  with the scripted join (`ss_native_join 0`, flag 2). The scripted join itself
+  also started with 2 humans.
+- The row that does not apply is greyed (pause-rows-*.jpg); pressing a greyed
+  row does nothing.
+- Quit from the running game after the cycles: "Unload complete", menu package
+  removed, config.cfg `joystick "0"`, no new dump.
+- 3 CTests, 33 Python tests.
+
+Found on the way
+- The rows first did nothing. `ss_connect` / `ss_disconnect` only act from
+  player one's command buffer; IVEngineClient and the console queue for the
+  slot that owns the keyboard (in_forceuser, here player 2), where the handler
+  silently forwards the command to the server instead. Fix: the plugin calls
+  Cbuf_AddText(0, ...) (engine+149c20) from its frame hook.
+- First rejoin crashed: left4dead2_crash_20261010172528_1.mdmp, access
+  violation reading 0 at client.dll+0x2578d2, in the virtual at client+257830
+  called from the view render (+2525f8 <- +25861b). It dereferences
+  C_BasePlayer::GetLocalPlayer(active slot), which is still null for a few
+  frames after the split-screen user is added. Fix: hook returns zeros when
+  there is no local player. The guard is installed; the later rejoins did not
+  hit that window, so the guard's log line has not been seen yet.
+- Two hangs before these checks (17:07 and earlier) were the main thread
+  waiting in dsound.dll -> AUDIOSES.DLL -> RPC to the Windows audio service
+  (tools/analysis/hangstack.py). The user's speakers were unresponsive; after they were
+  restarted the game started normally. Not caused by the plugin.
+
+Not checked
+- A second physical controller, and so player two's Controller options.
+- A `%+command%` hint on screen (the lookup hook is installed and verified by
+  bytes only).
+- The main-menu rows for split direction and local co-op off/on are still
+  unclicked.
+- Leaving or joining during a map transition, a finale or while incapacitated.
+
+Second round, 2026-10-10 18:00-18:40
+DLL 3b77ed4b701641d7c765b52c84a332d56512fe40b671f41a3eaca5ae5f72e53f. Controller
+off this time (keyboard/mouse = player 1, flag 4; player two has no device and
+was moved with `cmd2` commands). sv_cheats cannot be enabled in a lobby-started
+game, so a temporary loose director_base_addon.nut (removed afterwards) spawned
+test entities and reported player state.
+
+Passed
+- Main-menu flyout: Vertikal / Horizontal / Standard set ss_splitmode 2 / 1 / 0;
+  "Bildschirmteilung deaktivieren" switched local co-op off (flag 15, tile
+  dimmed, footer gone), "aktivieren" switched it back on (main-menu-flyout.jpg).
+  ss_splitmode was put back to the user's 1 afterwards.
+- Vertical split in a game renders both views side by side.
+- An env_instructor_hint with hint_binding +use showed "[E] Hint test" for the
+  keyboard player; log: "Native prompt slot=0 device=keyboard command=+use
+  binding=e" (instructor-hint-vertical-split.jpg). A player with no device at
+  all gets the "?" key, by design.
+- changelevel with both players: both stay.
+- Leave with 60 HP: the bot kept 60 HP ("ist jetzt inaktiv" then "Dropped ...
+  leaving splitscreen"); rejoin returned the same survivor (92 HP, the bot had
+  used its kit).
+- Leave, changelevel, rejoin on the new map: "Player 2 joined a running game:
+  taking a free survivor", "Player 2 is back in the game", full HUD
+  (rejoined-after-map-change.jpg).
+- The drop-in guard logged "Skipped a screen-effect query for a joining player
+  without an entity yet" in three sessions (17:30, 17:35, 18:18): the null
+  player does occur, and no crash followed.
+- Four further quits from a running game: no dump, config.cfg joystick "0".
+
+Found and fixed in this round
+- A plain ss_disconnect deletes the survivor; the game spawns a fresh bot at
+  100 HP with start weapons. Fix: `cmd2 go_away_from_keyboard` first, then
+  ss_disconnect 0.7 s later.
+- After a map change the script has no record of player two's survivor, and
+  "jointeam 2" without a name does not seat them. Fix: detect a spectating
+  player two (4 s), send jointeam with the name of a free survivor.
+- That player's HUD lacked health panel, cross and crosshair until
+  hud_reloadscheme. Fix: the script runs it when player two is back.
+
+Still wrong / not checked
+- Leaving while incapacitated: "take a break" is refused, so the fallback
+  applies and the bot comes back fresh at the start position (measured:
+  incapacitated 300 HP -> bot 100 HP, not incapacitated).
+- env_hudhint text never appeared, so `%+command%` replacement is still unseen.
+- Controller hot-plug (devices::WatchForController) is byte-verified against
+  inputsystem.dll (Init +270a, poll gate +1481, poll +6250) but needs a real
+  controller switched on while the game runs. Expected log line:
+  "[devices] Controller 1 switched on after launch; XInput polling started".
+- Second physical controller.
+Correction, 2026-10-10 19:00 (DLL unchanged)
+- "Leaving while incapacitated loses the state" above was a wrong reading. In
+  that run player one had gone idle (harness AFK), and the game refuses "take a
+  break" to the last active human survivor (server+2fbac0: one human on the
+  survivor team and none on the infected team -> return). Repeated with both
+  humans active: incapacitated player two (297 HP, incap) -> "ist jetzt
+  inaktiv" -> dropped; the survivor stayed in place, and 17 s later the bots
+  had revived it and it had healed itself (80 HP), instead of a fresh 100 HP
+  bot at the spawn point.
+- Remaining case: player two leaves while player one is idle -> fresh bot.
+- Xbox comparison (strings of GameUI_360 / engine_360 / server_360 and the
+  handler PC GameUI retains): the Xbox pause menu's Enable/Disable Splitscreen
+  ask "You must exit to the main menu to change this setting. Any unsaved
+  progress will be lost." and leave the game. ss_connect / ss_disconnect exist
+  in the Xbox engine but no other Xbox module names them. There is no
+  in-place leave on the console, so it has no behaviour for this case.
+
+Third round: version 35 (Xbox menu, plugin-owned input), 2026-10-10 19:00-19:45
+DLL d2bdb1d772505601e69bd70ebce041693810ffa49cf6df60fe2c6af8a47726d6, package
+version 35. Menus driven with injected key presses; screenshots xbox-menu-*.jpg.
+The controller was off at launch and was switched on by the user during the
+first game of this round.
+
+Passed
+- Main menu shows Valve's own offline tile (last in the carousel, one step
+  left of Campaign): "IM OFFLINE-KOOP-MODUS SPIELEN - Spielen Sie mit einem
+  Freund ein Offlinespiel mit geteiltem Bildschirm." A on it opened the
+  two-player campaign lobby directly; Start Game gave 2 humans.
+- Options > "Bildschirmteilung deaktivieren": plugin disabled, menu reloaded,
+  tile now "EINZELSPIELER SPIELEN", the row reads "Bildschirmteilung
+  aktivieren". Selecting it again: enabled, tile back, console footer back.
+- Options > "BILDSCHIRMTEILUNG": the console Audio/Video page with only the
+  split direction, focused, showing the current value. Dropdown Standard /
+  Horizontal / Vertikal with Valve's help texts; choosing Vertikal set
+  ss_splitmode 2, Horizontal 1, Standard 0. Escape closes the page after a
+  change. ss_splitmode was left at the user's 1.
+- Versus tile > flyout > new last row "Einzelspieler": two-player Versus lobby
+  (8 slots, both local players).
+- Input owned by the plugin: "[input] Menu controller enabled: guard1
+  joystick1 ..., gamepad axes mapped"; in the game "[input] Controller presets
+  applied: player 1 = 1, player 2 = 1 (sent=1)" and the client's "Advanced
+  joystick settings initialized for joystick 1 / 2". host_xbox_e3_restart
+  stayed at 15 throughout.
+- Controller switched on during the game (19:20:25): "[devices] Controller 1
+  switched on after launch; XInput polling started", "Keyboard/mouse drive
+  player 2 (controller 1 connected)", "[input] Keyboard and mouse now drive
+  player 2", in_forceuser 1; the HUD prompts switched (Y glyph for player one,
+  Q for player two).
+- Leave and rejoin with the new script: on leave "[input] Keyboard and mouse
+  now drive player 1", on rejoin "... player 2", presets applied again,
+  "[Splitscreen] Player 2 rejoined" / "Player 2 is back in the game".
+- After quit: config.cfg joystick "0", joy_advanced "0", joy_advaxisx "0",
+  ss_splitmode "1"; menu package removed; no new dump (five quits this round).
+- 3 CTests (input test rewritten for the new ownership), 36 Python tests.
+
+Found and fixed in this round
+- The main menu's Options flyout could not be operated with keys or a
+  controller: its InitialFocus was the Xbox row BtnAudioVideo, its rows the PC
+  ones. (Present before this round as well.)
+- The console split-direction dropdown is disabled on PC without exception,
+  and its page cannot be left once a setting changed (profile write stub).
+  Two hooks: enable + select + focus at Activate, clear the changed mark
+  before the page handles a key.
+- A menu reload (needed for the tile to change) left the PC tooltip strip
+  above the console footer; the footer's help label now starts hidden, every
+  window sets it itself.
+- In a game the same page shows the setting disabled; the pause menu
+  therefore has no split-direction row.
+
+Not checked
+- The Single Player rows of Campaign, Realism, Survival and Scavenge (same
+  command family as the tested Versus row and tile).
+- Whether the pad itself controlled player one after the hot-plug: detection,
+  routing and prompts are confirmed by the log, the stick input is the user's
+  to confirm.
+- A second physical controller.
+
+Fourth round: controller off at launch, 2026-10-10 20:00-20:15
+User report after round three: a controller switched on during the game had
+working sticks, but no buttons and no button glyphs on the HUD.
+
+Cause (log of round three, then the client and gameui code)
+- 19:18:51 and 19:19:59 "[input] Re-armed controller input": the guard had been
+  cleared twice, each time by "exec undo360controller.cfg" (unbindall, default
+  keys, sk_autoaim_mode 0): once by the main menu's once-per-launch check
+  while no joystick is connected (gameui+67db0, controller_popup_shown), once
+  by the client's joystick setup behind joyadvancedupdate while
+  joy_xcontroller_found was 0 (client+12fdb0). Sessions that started with the
+  controller on show neither line.
+- With found forced to 1 alone (DLL eb7408ab...) the main menu still cleared
+  the guard: "Re-armed ... (were 0 1 1)", and key_listboundkeys showed the
+  default keys only.
+
+Passed with both held at 1 (DLL 6899a2bb..., controller off at launch)
+- No re-arm line at the main menu or after "Controller presets applied".
+- key_listboundkeys in the game: the user's "p" bind, and JOY1..JOY10 for both
+  pads ([114:0].., [146:1]..); sk_autoaim_mode stayed 1.
+- 20:10:12 the user switched the controller on: "Controller 1 switched on
+  after launch; XInput polling started", keyboard to player two; the user
+  confirmed buttons and glyphs.
+
+Weapon-model field of view (DLL 27059fbb..., controller on at launch)
+- cl_viewmodelfovsurvivor set to 51 with local co-op off, then enabled: 35 in
+  the split-screen game (horizontal split), "weapon-model fov saved=51" at the
+  configuration write, config.cfg after quit: 51.
+- Same quit: bind "p", pad binds, sk_autoaim_mode 1, joystick 0, the axis
+  values that were set before enabling (1/3/1/0/2/4/0), ss_splitmode 1; menu
+  package removed; no new dump.
+- 3 CTests (input test covers both flags and the field of view), 36 Python tests.
+
+Note for testing: Steam replaces cfg/config.cfg with its cloud copy at launch,
+so an edit made while the game is closed is lost. Change settings through the
+console while the game runs.
+
+Not checked
+- Vertical split (58) and the non-widescreen layout for the field of view.
+- A second physical controller.
+
+Fifth round: player two leaves during the game, 2026-10-10 20:16-20:20
+User report: after switching split-screen off in the pause menu the weapon
+looked far too close to the camera. DLL b3a78e9b..., horizontal split.
+- Two players: cl_viewmodelfovsurvivor 35.
+- Pause menu > Optionen > "Bildschirmteilung deaktivieren": "[input] One view
+  again: weapon-model fov 35 -> 51 (1)" in the frame player two's view went
+  away; full-screen view with the normal weapon size (screenshot).
+- "Bildschirmteilung aktivieren": the game set 35 again by itself; both views
+  correct.
+- config.cfg after quitting from the two-player game: 51.
+
+Sixth round: untested menu rows, vertical split, infected arm models,
+2026-10-10 20:51-21:02. Controller on at launch, keys injected.
+
+Passed
+- Single Player row of Campaign, Realism, Survival and Scavenge: each opened
+  its lobby as "Offline-Koop" with both local players ("Expanded native
+  offline session before ready: players=2", slots 2, Scavenge 8).
+- Vertical split (ss_splitmode 2 for this game only): both halves with their
+  own HUD and prompts (Y / Q), cl_viewmodelfovsurvivor 58. Pause menu >
+  "Bildschirmteilung deaktivieren": "One view again: weapon-model fov 58 ->
+  51 (1)".
+- After both quits: bind "p", pad binds, cl_viewmodelfovsurvivor 51,
+  joystick 0, sk_autoaim_mode 1, ss_splitmode 1; menu package removed a few
+  seconds after exit; no new dump.
+
+Infected arm models: no change needed
+- Assumed beforehand: the split layout's values for hunter, tank, boomer and
+  smoker stay behind like the survivor's. A build that restored them (DLL
+  8039230e..., then b68f63db... with the values in ss_native_input_status)
+  showed otherwise: 50/50/50/50 at the menu, 30/35/45/50 in a horizontal
+  split game, 50/50/50/50 after player two left, and the plugin's restore had
+  nothing to write. The game rewrites those four and cl_fov on every layout
+  change (client+1b3710); only the survivor value is skipped when one player
+  remains. The restore for the four was removed again; the comment in
+  input.cpp records why. Final DLL 36cac99c... (source as committed).
+
+Seen, not changed
+- Vertical split with one player idle: the teammate row (screen-wide, between
+  the two players' own panels) gets a third panel for the idle player and
+  spans x 335-935 of 1280; nothing overlaps.
+- "cmd1 +attack" from the console did not take player one out of idle; the
+  controller's trigger prompt (RT) was shown. Not a finding about the game.
+- Realism Versus, Versus Survival and Mutation have no Single Player row.
+
+Not checked
+- A second physical controller.
+
+Seventh round: offline rows for Realism Versus and Versus Survival,
+2026-10-10 21:07-21:16. DLL ffe4f2b9... (first Versus Survival game: 36cac99c...).
+
+Passed
+- Every offline row reads "Offline-Koop" while local co-op is on (seen:
+  Campaign, Realism Versus, Versus Survival).
+- Realism Versus > "Offline-Koop": "Expanded native offline session before
+  ready: players=2 slots=8", eight-slot lobby with both local players. Start:
+  "Players: 2 (0 bots) / 8 humans", "[Splitscreen] Local competitive game:
+  empty-team shutdown disabled (sb_all_bot_game 1)"; player one a survivor,
+  player two choosing a hunter spawn; the game stayed up.
+- Versus Survival > "Offline-Koop": the same, after cfg/addonconfig.cfg
+  "mutation15" was set to 0 by tools/configure_local_modes.py enable.
+  With the earlier DLL the lobby had 2 slots and both players were survivors;
+  with the team-mode slot count one player was on the Infected side.
+- After quit: bind "p", cl_viewmodelfovsurvivor 51, joystick 0,
+  sk_autoaim_mode 1, ss_splitmode 1; menu package removed; no new dump.
+- 3 CTests, 38 Python tests.
+
+Test-harness notes
+- A mouse pointer resting over a flyout takes the focus from injected arrow
+  keys (the game re-centres the pointer after a game). Once this put the focus
+  on "Online spielen", and the following confirm opened the public game list
+  and its join button; the game refused the connection itself ("remove
+  plug-ins before connecting to a VAC-secured server"). Park the pointer
+  (gamewin.py move 3500 1900) and take a screenshot before every confirm.
+
+Not checked
+- Versus Survival with the addon restriction still in place.
+- The character menu's Infected entry in these two lobbies was not opened;
+  the sides seen in the games were the lobby's defaults.
+- A second physical controller.
+
+Eighth round: settings file, 2026-10-10 21:25-21:30. DLL 007b3a11...,
+ss_native.ini with SafeArea=0 and KeyboardPlayer=1, controller 1 on.
+
+Passed
+- "[settings] ss_native.ini: SafeArea=0 KeyboardPlayer=1", "[devices]
+  Controllers 1 and 2 trade places: keyboard and mouse are player one".
+- Offline tile > lobby > game (horizontal split): "Keyboard/mouse drive
+  player 1 (controller 1 not connected)", in_forceuser 0, presets applied for
+  both players; key_listboundkeys shows both pads' codes ([114:0].., [146:1]..).
+- HUD: "Binding hint slot=0 device=keyboard ... q", "slot=1 device=controller
+  code=149 ... Y_BUTTON"; on screen Q for the top player and Y for the bottom
+  one; the idle bottom player's take-over prompt shows RT.
+- Console commands (they go to the keyboard's player) moved the top player.
+- No "[safearea] ... HUD title-safe branch active" line; the HUD panels sit at
+  the screen edge (own panel right edge at 1275 of 1280 instead of 1210,
+  teammate row from x 8 instead of 75). Main menu, lobby and pause menu look
+  the same as with the margins.
+- ss_native_disable: "Controller order restored". Enable with KeyboardPlayer=2
+  in the file: no trade; disable, back to 1, enable: traded again.
+- After quit: bind "p", cl_viewmodelfovsurvivor 51, joystick 0,
+  sk_autoaim_mode 1, ss_splitmode 1; no new dump. The default file was put
+  back in the game folder afterwards.
+- 3 CTests (safe-area fixture covers the setting), 38 Python tests.
+
+Not checked
+- The controller itself playing as player two: nobody held it. Detection,
+  routing, bindings and prompts are what the log and the screen show.
+- The lobby's character menu and the pause menu operated from that controller.
+- Two physical controllers.
+
+Ninth round: XboxSticks and ConsoleUI settings, 2026-10-10 21:35-21:48.
+
+XboxSticks=0 (DLL 95f725e4...)
+- "[input] Stick response and sensitivity left as the user set them:
+  lowend=0.649999976 accelscale=3 accelmax=4, pitch/yaw 1/-1.5, 1/-1, pitch
+  threshold 0.100000001"; local co-op enabled, game started normally.
+- The same run had no console packages installed (experiment for the look
+  switch): the PC lobby showed both players and a game started with two
+  humans.
+
+ConsoleUI=0 (DLL 57800e4e..., launcher: "Look: PC (ConsoleUI=0)")
+- "[settings] ... ConsoleUI=0 SafeArea=0", "[presentation] Console look
+  switched off: PC footer and prompts; split direction page only"; no
+  hud_inventory or safearea lines in the game.
+- Main menu: no button bar; offline tile "IM OFFLINE-KOOP-MODUS SPIELEN".
+  Options: Video, Audio, Steam-Eingabe, Tastatur/Maus, Controller,
+  Mehrspieler, Steam Cloud, BILDSCHIRMTEILUNG, "Bildschirmteilung
+  deaktivieren".
+- BILDSCHIRMTEILUNG: the page opens with the setting enabled and "Horizontal"
+  shown, the PC tooltip line below; Escape leaves it. (It has no button for
+  the mouse to leave with.)
+- Offline tile: PC lobby (chat box, voice chat, "Lobby verlassen") with both
+  local players; start: 2 humans, PC HUD (item list at the right edge, no
+  cross, no margins).
+- Prompts: "Native prompt slot=0 device=controller command=attack
+  binding=R_TRIGGER", "slot=1 device=keyboard ... MOUSE1". A vote: "Vote
+  labels slot=0 device=controller", the top player's panel shows START / BACK,
+  the caller's shows no keys (already voted).
+- Pause menu > Optionen: both player-two rows; "Bildschirmteilung
+  deaktivieren": "ss_disconnect 1", keyboard to player 1, weapon-model fov
+  35 -> 51.
+
+ConsoleUI=1 again (same DLL, launcher: "Look: Xbox")
+- Button bar, console split direction page, item cross ("Xbox cross slot=0"),
+  title-safe margins as before.
+- After quit: bind "p", cl_viewmodelfovsurvivor 51, joystick 0,
+  sk_autoaim_mode 1, ss_splitmode 1, joy_pitchsensitivity 1; menu package
+  removed; no new dump. Default settings file back in the game folder.
+- 3 CTests (input fixture covers XboxSticks=0), 39 Python tests.
+
+Not checked
+- The PC look in a team mode, with a vertical split, and its scoreboards.
+- XboxSticks=0 with a controller in hand (only the values were read).
+- The earlier puzzle of player one holding an axe / a hand reaching for a
+  medkit right after the first map's start: that is the intro's last frame
+  for that survivor, not input.
+
+Tenth round: both packages removed on exit, 2026-10-10 21:57.
+- Launcher: "Both packages will be removed again when the game exits."
+  While the game ran: splitscreen_support.vpk and splitscreen_menus.vpk in
+  left4dead2/addons, both listed in addonlist.txt, "Local bridge enabled".
+- About ten seconds after quit: neither package in the folder; ss_native.dll,
+  ss_native.ini and the log remain. No new dump.
+Not checked: a start through Steam afterwards (that the HUD is stock again
+follows from the file being gone); -KeepMenus and -Uninstall after the change.
+
+Eleventh round: packages without addoninfo.txt, release package,
+2026-10-10 21:58-22:17. DLL 57800e4e... (unchanged).
+
+Packages without addoninfo.txt (development launcher)
+- Add-ons screen: "Derzeit sind keine Add-ons installiert." Console lobby
+  layout in use, ">>> Loading addon script ...splitscreen_support.vpk...": both
+  packages are mounted.
+
+Release folder dist/SplitscreenSupport-v36 (addon policy set back to Valve's
+original for this test: versus, scavenge and mutation15 "1")
+- Install: both shortcuts created; "The game build is supported".
+- Start, Xbox look: in left4dead2/addons ss_native.dll, ss_native.ini,
+  ss_native.session.json, ss_native_hud.vpk, ss_native_menus.vpk; both listed
+  in addonlist.txt; addonconfig.cfg versus/scavenge/mutation15 "0"; "Local
+  bridge enabled"; offline tile and button bar.
+  ss_native_create versus + start: eight-slot session, "2 humans, 0 bots",
+  "[Splitscreen] Local competitive game: ...".
+- After quit: addons folder back to readme.txt and workshop, addonlist.txt
+  without the two entries, addonconfig.cfg with the same SHA-256 as before
+  (124b5c5a...), ss_native.log in the release folder; config.cfg as before;
+  no new dump.
+- Start, PC look (ConsoleUI=0): "Console look switched off", installed HUD
+  package identical to files/hud_pc.vpk.
+- Background cleanup stopped on purpose, then quit: everything left in the
+  game folder, policy still lifted. Uninstall: "Removed what the last session
+  left in the game", shortcuts removed, folder and policy as before.
+- Unzipped archive in ".../rel test (1)/", started through "Start Local
+  Co-op.cmd": same result; a fresh session's log is 8 KB.
+- 3 CTests, 41 Python tests.
+
+Notes
+- The game rewrites addonlist.txt itself at start and drops entries whose
+  file is gone.
+- For the test the launcher got GameArguments with the development console
+  port; the shipped settings file has none.
+- Afterwards the addon policy was set to "enabled" again for the development
+  launcher (tools/configure_local_modes.py enable), as it was before.
+
+Not checked
+- Launching through the created shortcut itself.
+- Another PC, another Steam library location, an unsupported game build.
+
+Twelfth round: rename to splitscreen_support, 2026-10-10 22:23-22:27.
+DLL edcf0c53... (plugin/build.ps1: clean build, 3 CTests, validation).
+From here on: splitscreen_support.dll / .log / .ini / .session.json,
+packages splitscreen_support_hud.vpk and splitscreen_support_menus.vpk in a
+release session, console commands splitscreen_*; the release package's
+settings file is config.ini.
+
+Release folder
+- During the session the addons folder held exactly those names; "Load
+  Splitscreen Support", "[settings] splitscreen_support.ini: ...", "Local
+  bridge enabled".
+- Options > "Bildschirmteilung deaktivieren" (the row runs
+  splitscreen_disable): "Disabled; hooks removed", main menu without button
+  bar. splitscreen_enable from the console: "Local bridge enabled".
+- After quit: addons folder back to readme.txt and workshop;
+  splitscreen_support.log in the release folder beside config.ini.
+- 41 Python tests.
+
+Development launcher (after correcting its settings-file path, which the
+first try still had under the old name and failed on before starting)
+- "Local bridge enabled", splitscreen_create coop: two-player session;
+  packages removed after quit, plugin, settings and log left as before.
+- No new dump in either run.
+
+Thirteenth round: repository restructure, 2026-10-10 23:07-23:10.
+DLL 2183f125... (plugin/build.ps1: clean build from plugin/src, 3 CTests,
+validation). Same sources, new paths: plugin/ (was native/), packages
+build/hud.vpk and build/menus.vpk with their _pc pair, tools in
+tools/packaging, tools/game and tools/analysis. The development launcher and
+configure_local_modes.py are gone: "Start Dev Session.cmd" assembles build/dev
+as a release folder (build_release.py --dev) and starts it with the release
+launcher.
+
+Development session through "Start Dev Session.cmd"
+- Before: addons folder stock, addonconfig.cfg versus/scavenge/mutation15 = 1.
+- During: addons held the plugin, its ini, the session record and both
+  packages; addonlist.txt listed both; the three policy values were 0.
+  splitscreen_status: loaded=1 insecure=1 supported=1 enabled=1. The console
+  port from build/dev/config.ini (GameArguments) answered after 4 s.
+- The plug-in notice names "addons\splitscreen_support" and has the console
+  button bar.
+- splitscreen_create coop: lobby with Player and Player (2), Xbox look.
+  splitscreen_start: c1m1_hotel, "2 humans, 0 bots", both views with HUD and
+  item cross. Nobody held the controller.
+- After quit: addons folder back to readme.txt and workshop, addonlist.txt
+  empty, policy values 1 again, splitscreen_support.log in build/dev.
+  config.cfg: joystick 0, cl_viewmodelfovsurvivor 51, bind p intact.
+- tools/game/shot.ps1 finds the game folder from the running process.
+- 35 Python tests (the five of configure_local_modes.py went with it).
+
+Fourteenth round: addresses found by search pattern (2026-10-11)
+----------------------------------------------------------------
+Plugin ca9bd395..., game build 10097 (the researched one). Addresses are no
+longer constants: 190 rows in plugin/include/signatures.inc.
+- First attempt in the game: engine.dll reported "kEngineClient not found" and
+  "kHostNewGameCapacityOperand not found", supported=0, no hook installed,
+  game untouched. Cause: two patterns contained bytes of a relocated address,
+  which match the file but not the module loaded at another base. Fixed in the
+  generator; splitscreen_check --researched now also resolves every row with
+  the modules shifted to another base, which catches this.
+- After the fix: all six modules "addresses found=1 moved=0", supported=1,
+  37 hooks installed, no refusal in the log.
+  splitscreen_create coop: lobby with both players, Xbox look.
+  splitscreen_start: c1m1_hotel, "2 humans, 0 bots", both views with HUD and
+  item cross. Nobody held the controller.
+- Launcher with engine.dll's hash falsified in build/dev/files/
+  supported_build.json: it asked splitscreen_check.exe, started the game, same
+  result as above.
+- After each quit: addons folder back to readme.txt and workshop, policy
+  values 1, no new crash dump, joystick 0 in config.cfg.
+- 41 Python tests; the checker tests cover: researched game in place, a file
+  that differs outside the patterns accepted, a changed function refused by
+  name, a missing module refused.
+Not checked: a real game update (none exists), the launcher's refusal message
+in a real start, play with the controller, the PC look.

@@ -1,0 +1,59 @@
+[ss_native] [input] active=1 restorePending=0 readable=1 guard=1 joystick=1 split=2
+
+[ss_native] [input] responseReadable=1 lowend=0.75 accelscale=2 accelmax=1 saved=0.649999976/3/4
+
+[ss_native] [input] sensitivityReadable=1 pitch/yaw1=0.800000012/-2.25 pitch/yaw2=0.800000012/-2.25 saved=1/-1.5,1/-1
+
+[ss_native] [input] pitchThresholdReadable=1 pitchthreshold=0 saved=0.100000001
+
+[ss_native] [identity] status entity=1 userid=2 edict=239F0020 engineXUID=<player's id> network=<player's id> split=0 parent=00000000 attached=1 guestSlot1=239F0030 matchmakingGuest=0000000053530002
+
+[ss_native] [identity] status entity=2 userid=3 edict=239F0030 engineXUID=0000000000000000 network=BOT split=1 parent=239F0020 attached=0 guestSlot1=00000000 matchmakingGuest=0000000053530002
+
+[ss_native] [identity] status entity=3 userid=4 edict=239F0040 engineXUID=0000000000000000 network=BOT split=0 parent=00000000 attached=0 guestSlot1=00000000 matchmakingGuest=0000000053530002
+
+[ss_native] [identity] status entity=5 userid=6 edict=239F0060 engineXUID=0000000000000000 network=BOT split=0 parent=00000000 attached=0 guestSlot1=00000000 matchmakingGuest=0000000053530002
+
+[ss_native] [identity] 4 callback edicts tracked; interface=7197A4FC avatarBridge=1
+
+"in_forceuser" = "1" ( def. "0" )
+
+ cheat
+
+ - Force user input to this split screen player.
+
+"sv_cheats" = "0"
+
+ notify replicated
+
+ - Allow cheats on server
+
+Player (2) attacked Player
+
+"cl_autoaim" = "1"
+
+ client archive user ss
+
+ - Set to 1 to use autoaim on joysticks, 0 to disable
+
+"cl_autoaim2" = "1"
+
+ client archive user ss_added
+
+ - Set to 1 to use autoaim on joysticks, 0 to disable
+
+[ss_native] [input] Archived input protection prepared=1 restoredLive=1; saved joystick=0 lowend=0.649999976 accelscale=3 accelmax=4 pitch/yaw=1/-1.5,1/-1
+
+[ss_native] [input] Archived pitch threshold protected: saved=0.100000001
+
+Host_WriteConfiguration: Wrote cfg/config.cfg
+
+[ss_native] [input] active=1 restorePending=0 readable=1 guard=1 joystick=1 split=2
+
+[ss_native] [input] responseReadable=1 lowend=0.75 accelscale=2 accelmax=1 saved=0.649999976/3/4
+
+[ss_native] [input] sensitivityReadable=1 pitch/yaw1=0.800000012/-2.25 pitch/yaw2=0.800000012/-2.25 saved=1/-1.5,1/-1
+
+[ss_native] [input] pitchThresholdReadable=1 pitchthreshold=0 saved=0.100000001
+
+

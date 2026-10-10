@@ -1,0 +1,151 @@
+PC native local-player and controller registration research (2026-10-10)
+
+Scope: static, read-only inspection of the installed 32-bit PC modules. No
+process injection, patch installation, game control, or public-interface calls
+were performed for this research. Addresses below are module-relative RVAs;
+the preferred image base is 0x10000000. Exact module SHA-256 hashes, PE metadata,
+and bytes at each site are in input_registration_findings.json.
+
+1. Native player manager retains four slots, but PC registration fills one.
+
+matchmaking.dll +0x7810 is IPlayerManager::GetLocalPlayer: unsigned index >3
+returns null; otherwise it reads this+8+4*index. The PlayerManager vtable is
++0x51a8c; GetLocalPlayer is slot1 (byte offset4).
+
+PlayerManager::OnGameUsersChanged at +0x7c30 clears/destructs all four local
+slots, then allocates one 0xc98-byte PlayerLocal, calls its constructor with
+controller index0, and stores it at this+8. The local-manager global pointer is
+at +0x6494c. Merely increasing engine split-screen clients does not execute a
+second profile registration path here.
+
+PlayerLocal constructor +0xafc0 accepts a controller index and stores it at
++0x10 of the object. However, it always fetches the same PC Steam user's XUID
+and persona name, independently of that index. Constructing a second object
+with argument1 alone therefore gives duplicate identity. It also registers
+Steam callbacks; a diagnostic must not blindly duplicate account/stat behavior.
+
+PlayerLocal vtable +0x52530 starts with:
+  slot0 +0x9e40: XUID, stored in object+8/+0xc (64-bit EDX:EAX return).
+  slot1 +0x9e50: controller index, object+0x10.
+  slot2 +0x9e60: name, inline buffer object+0x18.
+  slot3 +0x9e70: state, object+0x14.
+
+The public traversal observed in GameUI +0x4f944 is:
+  IMatchFramework vtable[11] -> IMatchSystem
+  IMatchSystem vtable[0] -> IPlayerManager
+  IPlayerManager vtable[1](index) -> IPlayerLocal
+The interface registration string is MATCHFRAMEWORK_001. This traversal is a
+good first read-only in-process diagnostic: log slots0..3, controller indices,
+names, XUIDs, and current session member records without altering the session.
+Calling conventions and interface names still require validation by a bridge
+compiled for this exact x86 build; no live diagnostic has been run here.
+
+2. Engine-to-matchmaking avatar propagation is already present.
+
+engine.dll +0x82e5b constructs/broadcasts OnEngineSplitscreenClientAdded with
+the added slot. Matchmaking's handler at +0x4066 passes that slot to +0x3b80.
+That helper fetches GetLocalPlayer(slot), obtains the XUID, searches the current
+session for that player, reads Game/avatar, and builds native avatarinfo with
+xuid, team, avatar and applicable content flags.
+
+At matchmaking +0x3d05, the helper saves the current engine split-screen slot
+(engine interface vtable byte offset0x1f8), sets the target slot (0x1fc), sends
+avatarinfo via ServerCmdKeyValues (0x2b0), then restores the previous slot.
+If GetLocalPlayer(slot) is null, it skips all player-specific fields and still
+sends the empty avatarinfo. This explains why an engine-only second client
+does not by itself acquire an independent lobby character/profile.
+
+Consequently, a genuine registered local guest plus its real session member
+record should let the existing engine launch path carry P2's chosen avatar
+and team. This is a supported feasibility inference, not a completed live
+prototype. It may remove the need for post-spawn character transfers once
+registration, launch client count, and server behavior are verified together.
+
+3. EnableSplitscreen opens a retained Xbox flow with a PC no-op endpoint.
+
+gameui.dll +0x68e46 handles EnableSplitscreen. It closes existing menus,
+sets CAttractScreen mode1 through +0x21e10 (mode global +0x2010c0), and opens
+window0x1c. OpenWindow's constructor case +0xb158 creates the real AttractScreen
+through +0x23020, so this is not an absent window/resource name.
+
+AttractScreen OnOpen +0x222e0 sets its blocking byte this+0x2d4 and hides
+LblPressStart and its shadow for modes1/2/3. Its OnThink mode1 sequence enters
+state7, resets attract mode, and calls the sign-in transition +0x22620. That
+transition calls virtual byte offset0x490 when its sign-in-completion branch
+is reached. AttractScreen vtable +0x167a2c maps that virtual to +0x21f40, which
+contains only RET. The adjacent virtual0x48c at +0x21f30 is also a bare RET.
+
+The blocked-key path at +0x22bd2 returns immediately while this+0x2d4 is set.
+The retained flow thus hides the visible prompt and waits for sign-in work
+whose endpoint is stubbed in this PC build. This is direct binary evidence for
+the blank EnableSplitscreen behavior; forcing visibility alone would not
+register a local guest or produce two matchmaking members.
+
+4. PC UI still decodes the originating controller.
+
+gameui.dll +0xe880 decodes joystick button blocks into local controller index:
+  ordinary buttons 0x72..0xf1: (code-0x72)/32;
+  POV buttons 0xf2..0x101: (code-0xf2)/4;
+  joystick axis buttons 0x102..0x131: (code-0x102)/12;
+  additional Steam Controller ranges have their own retained decoders.
+Non-joystick keyboard codes return index0 at +0xe94a.
+
++0x7030 normalizes those same controller-specific codes to the corresponding
+controller-zero button using remainder operations. AttractScreen's key handler
++0x22ba0 calls both helpers, retaining the source index before normalization.
+So raw menu input contains enough information for per-controller selection.
+This does not prove independent focus is already enabled throughout GameLobby.
+
+The retained base CL4DFrame key handler at +0xeb80 already passes that decoded
+index to CBaseModPanel::SetLastActiveUserId (+0x9b00), which stores it at
+panel+0x284. GetLastActiveUserId (+0x9b30) returns that field. The singleton
+getter at +0x9a90 reads global pointer +0x1ffb10. A native active-user context
+therefore already exists; replacing GameLobby's literal0 can use this getter,
+matching the Xbox approach more closely than inventing another focus system.
+Flyout/dropdown-specific key handlers still need confirmation that they update
+the field before issuing their avatar command.
+
+The GameLobby avatar command at +0x4f960 currently passes literal0 to
+GetLocalPlayer. The native_ui agent traced the full handler and offline lobby
+constructor separately. A bridge needs to use the initiating local UI context
+for that call, not replace every GetLocalPlayer(0) in the process globally.
+For the user's controller1=P1, keyboard=P2 setup, keyboard-origin UI events
+also need explicit mapping: the current UI decoder returns0 for keyboard,
+regardless of the gameplay in_forceuser routing.
+
+5. Feasible staged native bridge, not a replacement painted lobby.
+
+First stage should only log interfaces, local profiles, session settings and
+controller event context, using module hashes/signatures to reject mismatched
+builds. A reversible local -insecure prototype can then:
+  a) supply a genuine offline guest IPlayerLocal identity/controller mapping
+     alongside the existing host profile; do not clone the host Steam account
+     as the same XUID or redirect its online stats;
+  b) replace/extend PC's one-member offline initializer before its ready event,
+     creating machine0/player1 with that guest's actual local identity, name,
+     and Game/avatar, and set all relevant native member counts to2;
+  c) use the retained native ready event to open GameLobby and its actual rows;
+  d) route the shared native character control through the initiating local
+     player, preserving the existing Game::Avatar session command;
+  e) launch both engine split slots and verify native avatarinfo propagation.
+
+native_ui found the offline initializer at matchmaking +0x253e0 explicitly
+writes one machine/player/slot and creates only player0. It also found PC
+GameUI's ready handler selects GameLobby for an offline session with >1 real
+members. Those findings are separate evidence that the native shared lobby
+is feasible once registration/member construction are repaired.
+
+The Xbox comparison agent subsequently traced its PlayerManager users-changed
+loop to actual XamUserGetXUID(controller, flags7) calls, with per-slot guest
+flags and a slot-to-controller table supplied by tier0. Xbox does not derive
+guest XUIDs by simple arithmetic in the PlayerLocal constructor. A PC bridge
+therefore needs an explicit offline guest profile/session identity; it should
+not pretend a second Steam account has authenticated. Xbox evidence and
+payload hashes are maintained separately under docs/research/xbox_lobby/.
+
+Unresolved before implementation: the safe PC offline guest-identity contract,
+which guest-facing IPlayerLocal methods require independent behavior, cleanup
+on users-changed/disconnect, whether every launch path uses the native member
+count, and controller-aware row/flyout focus. The Xbox payload comparison agent
+is tracing guest registration. None of these gaps establishes that a native
+PC lobby is impossible; they define concrete bridge tests.

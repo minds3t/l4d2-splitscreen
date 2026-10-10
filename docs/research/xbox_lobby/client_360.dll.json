@@ -1,0 +1,55 @@
+{
+  "source": "xbox_raw\\left4dead2\\bin\\client_360.dll",
+  "source_sha256": "11237c221b4089317577c470cb092675f5e9e3b87d4115874917adf3699a73af",
+  "output": "research\\xbox_lobby\\client_360.dll.pe",
+  "output_sha256": "3d6b0289cbd0fd4bda79652fa05256d39414f8f82b8756516465ffae61e01703",
+  "output_bytes": 6848512,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x88100000",
+  "entry_point": "0x886a6ef0",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 1144228,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0x117a00",
+      "size": 133936,
+      "raw": "0x117a00"
+    },
+    {
+      "name": ".text",
+      "va": "0x140000",
+      "size": 5054644,
+      "raw": "0x138600"
+    },
+    {
+      "name": ".data",
+      "va": "0x620000",
+      "size": 1601208,
+      "raw": "0x60a800"
+    },
+    {
+      "name": ".edata",
+      "va": "0x7b0000",
+      "size": 118,
+      "raw": "0x66e200"
+    },
+    {
+      "name": ".idata",
+      "va": "0x7c0000",
+      "size": 748,
+      "raw": "0x66e400"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0x7d0000",
+      "size": 48,
+      "raw": "0x66e800"
+    }
+  ]
+}

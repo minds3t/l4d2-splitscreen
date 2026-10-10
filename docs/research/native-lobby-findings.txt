@@ -1,0 +1,150 @@
+Native Xbox local lobby investigation - 2026-10-10
+================================================
+
+Result
+------
+The user's remembered flow is supported by the Xbox executable, not just by
+unused resource names. Xbox creates an offline session containing both local
+users and opens the same GameLobby screen used by multiplayer. Character
+selection identifies the local player from the active UI/controller identity.
+
+The current PC build retains the multi-member offline lobby, its member rows,
+native avatar selection protocol, uniqueness checks, and per-slot avatar
+delivery during game connection. However, several PC paths explicitly replace
+the Xbox local-user logic with one-user behavior. VPK resources and the current
+VScript helpers cannot supply those missing prelaunch native objects.
+
+This establishes a concrete restoration route, not a completed port. No native
+guest bridge has been installed or runtime-tested. Version 27 remains the
+installed gameplay baseline. The shared lobby and independent prelaunch
+character selection remain unfinished.
+
+Direct Xbox binary evidence
+---------------------------
+The provided disc's GameUI_360.dll, matchmaking_360.dll and tier0_360.dll were
+extracted to inspect PowerPC instructions. Extraction tooling, input/output
+SHA-256 hashes and reproducible disassembly are in xbox_lobby/.
+
+1. Offline session creation: matchmaking_360 preferred VA 0x8b0b0c90.
+   At 0x8b0b0d4c the initializer gets the game-user count. That count supplies
+   Members/numPlayers, Members/numSlots and machine0/numPlayers. The loop at
+   0x8b0b0e60..0x8b0b0f00 builds a playerN entry for each local user, using
+   the slot-to-controller mapping and that actual player's XUID/name.
+
+2. Shared lobby selection: GameUI_360 0x84052e1c..0x84052e44 defaults to
+   GameLobby (window 9). Only offline sessions with <=1 player select
+   GameSettings (window 11). Two registered offline players use GameLobby.
+
+3. Character ownership: GameUI_360 0x840758c4..0x84075988 reads the current
+   UI user, maps it to a controller, calls GetLocalPlayer for that controller,
+   then sends Game::Avatar with that player's XUID and chosen avatar.
+   GameSettings repeats this identity lookup at 0x8407c958..0x8407c9a0.
+
+4. The mapping is an actual tier0 import, ordinal 0x32c. Its implementation
+   at tier0_360 0x82c21d20 returns an entry from a per-user mapping array.
+   The game-user count import is ordinal 0x321, implemented at 0x82c21b88.
+   Symbol-name interpretations are secondary to this observed behavior.
+
+The resources contain a shared DrpCharacter selector and GplSurvivors list.
+This supports each controller selecting its own avatar through the shared UI.
+It does not establish two simultaneously independent focus cursors; that was
+not claimed or tested on a running console.
+
+Direct PC evidence
+------------------
+Addresses below are module-relative RVAs for the captured current binaries.
+They are not live process addresses or portable signatures. See the hashes,
+instruction bytes and pseudocode in native_lobby_pc/.
+
+1. GameUI +0x0DDA0 handles session-ready. At +0x0DE37..+0x0DE83 it uses
+   the same offline/player-count decision as Xbox. The native lobby exists.
+
+2. GameUI +0x4FA40 iterates machines and then each machine's players to
+   populate survivor rows. There is no one-player-per-machine display limit.
+
+3. Matchmaking +0x253E0 initializes offline sessions with exactly one machine,
+   one player, one slot, and only player0. These are literal values, unlike
+   the Xbox user-count loop.
+
+4. Matchmaking +0x07C30 clears four local-player slots but creates only the
+   Steam player in slot0. GetLocalPlayer at +0x07810 can retrieve other slots.
+   Constructing a second ordinary PC PlayerLocal would still reuse the same
+   Steam account identity; a distinct local guest identity is needed.
+
+5. GameUI +0x4F960 passes literal index0 when the lobby changes a character.
+   The PC input decoder at +0x0E880 still distinguishes controller indices,
+   but keyboard events resolve to index0. Mixed input therefore needs a menu
+   keyboard-to-player2 mapping, in addition to gameplay's in_forceuser routing.
+   The retained frame key handler at +0x0EB80 already records the decoded
+   controller through SetLastActiveUserId (+0x09B00); its getter is +0x09B30.
+   Using that existing identity in the avatar command closely matches Xbox.
+   Dropdown-specific event handling still needs live validation.
+
+6. Matchmaking's Game::Avatar handler retains per-XUID selection, uniqueness
+   checks and OnPlayerUpdated notifications. A correctly registered guest
+   could use the native selected portraits and occupied-character rules.
+
+7. Matchmaking +0x03B80 handles avatar delivery for a supplied local slot.
+   It gets that slot's local identity, finds its session member, builds
+   avatarinfo {xuid, team, avatar}, sends it in the corresponding engine
+   split-screen context, and restores the previous context. This path is
+   invoked when a split-screen client is added. It is a promising way to
+   avoid the current post-spawn idle/takeover character workaround.
+
+8. EnableSplitscreen's blank PC screen has a specific cause: its attract/
+   sign-in flow hides the ordinary prompt and reaches a PC completion method
+   at GameUI +0x21F40 that immediately returns. Copying the Xbox layout cannot
+   implement the missing sign-in completion behavior.
+
+Implementation direction
+------------------------
+Build a local native guest/session bridge that preserves Valve's real lobby:
+
+- Register a distinct local guest identity and local-player object before
+  creating the offline session. This is local identity bookkeeping; it is
+  not a second Steam login or a restoration of Xbox Live authentication.
+- Extend offline session membership before its first ready notification.
+  The constructor calls the initializer before the first Update broadcasts
+  ready; UpdateSessionSettings already merges native KeyValues.
+- Let the existing ready handler open GameLobby and populate both players.
+- Route character commands using the originating local player. Preserve
+  controller identity, and map keyboard/mouse to player2 in the shared lobby
+  when the one-controller input arrangement is selected.
+- Connect both native game clients while retaining the session. Verify the
+  existing per-slot avatarinfo path carries the two lobby choices into the
+  initial spawn. Only then remove the post-load character-transfer fallback.
+- Keep the native mode/campaign/settings/start controls. Scope the bridge
+  to the intended local flow and make its lifetime/cleanup explicit.
+
+The first meaningful runtime milestone is a real offline GameLobby showing
+two distinct local members, each able to change its own character, followed
+by a map load with those exact two characters and independent inputs. Merely
+forcing the lobby window open, changing numPlayers to 2, or drawing a second
+row would not satisfy that milestone.
+
+Remaining uncertainty
+---------------------
+This was a static binary investigation. Native guest lifecycle, VGUI ownership
+checks, Steam avatar fallbacks, launch/server acceptance of the guest identity,
+and return-to-lobby behavior still need implementation and live validation.
+The available physical controller can validate pad1 + keyboard/mouse; pad2
+still requires a second physical controller test. Online support is a separate
+unvalidated question and is not established by this local lobby evidence.
+
+Supporting files
+----------------
+native_lobby_pc/findings.md         PC lobby/session analysis and pseudocode
+native_lobby_pc/capture_evidence.py Writes disassembly.json (hashed PC modules and
+                                  instruction evidence; not kept in the repository)
+native_lobby_pc/input_registration_findings.txt
+                                  PC local profiles, input and sign-in stubs
+native_lobby_pc/input_registration_findings.json
+                                  Input/profile module hashes and byte sites
+xbox_lobby/findings.txt            Xbox binary analysis and extraction details
+xbox_lobby/save_traces.py          Writes the xbox_*_trace.txt listings (not kept in the repository):
+                                  gameui: shared lobby, active user and avatar commands
+                                  matchmaking: native multiple-user offline initialization
+                                  tier0: user count and slot/controller mapping
+xbox_lobby/                       Extraction tools and binary hashes
+
+No game executable or installed addon was changed for this investigation.

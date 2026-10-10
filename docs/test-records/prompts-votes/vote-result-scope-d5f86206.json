@@ -1,0 +1,28 @@
+{
+  "prior_vpk_sha256": "a21f3e90f383b9e0615ac37fc1f0c4a5b80e166180dbeebd0c2721d4dce225ad",
+  "current_vpk_sha256": "d5f86206e77116bda894fe0d20a57ee59d5db31f81e37fee305b5ebf3ad41d83",
+  "only_changed_entry": "resource/ui/hud/votehud.res",
+  "panels": {
+    "VoteActive": {
+      "identical_ast": true,
+      "prior_sha256": "f6cdb8c49e9870ccea5e4d8304689df2028e08248aa811348f927780774d226d",
+      "current_sha256": "f6cdb8c49e9870ccea5e4d8304689df2028e08248aa811348f927780774d226d"
+    },
+    "VoteFailed": {
+      "identical_ast": true,
+      "prior_sha256": "e66f205e1eb6bded60229da09825710943e3e708732fb37708b0d1b511af23cc",
+      "current_sha256": "e66f205e1eb6bded60229da09825710943e3e708732fb37708b0d1b511af23cc"
+    },
+    "CallVoteFailed": {
+      "identical_ast": true,
+      "prior_sha256": "25c7e8cae4f4bfb907a58fc80720ff57b026eaff682f4088fd59fb24cdfd0d51",
+      "current_sha256": "25c7e8cae4f4bfb907a58fc80720ff57b026eaff682f4088fd59fb24cdfd0d51"
+    },
+    "VotePassed": {
+      "identical_ast": false,
+      "prior_sha256": "41ec7c7b94cf3754123f41e93f69ac37a52f0bd410588e032fecf6c73a62bf36",
+      "current_sha256": "c085fe0d3fa546dc634b0c808f00d1743a1264f9a757a7b1e07e72e9078c7081"
+    }
+  },
+  "scope": "Direct AST/block serialization comparison with saved a21 archive; final VotePassed baseline equality separately enforced by strict package audit."
+}

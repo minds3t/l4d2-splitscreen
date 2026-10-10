@@ -1,0 +1,55 @@
+{
+  "source": "xbox_raw\\bin\\GameUI_360.dll",
+  "source_sha256": "e5e41c9eac6cb7b7751d27e90a904c63597cca03526721214befdb0be5f86326",
+  "output": "research\\xbox_lobby\\GameUI_360.dll.pe",
+  "output_sha256": "e201797d6992a2c35c3559b1236f57b6941bd9ada1ce3ce04b87921cb5233aa7",
+  "output_bytes": 1409024,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x84000000",
+  "entry_point": "0x84131310",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 225264,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0x37400",
+      "size": 32248,
+      "raw": "0x37400"
+    },
+    {
+      "name": ".text",
+      "va": "0x40000",
+      "size": 1096732,
+      "raw": "0x3f200"
+    },
+    {
+      "name": ".data",
+      "va": "0x150000",
+      "size": 150008,
+      "raw": "0x14b000"
+    },
+    {
+      "name": ".edata",
+      "va": "0x180000",
+      "size": 118,
+      "raw": "0x151e00"
+    },
+    {
+      "name": ".idata",
+      "va": "0x190000",
+      "size": 752,
+      "raw": "0x152000"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0x1a0000",
+      "size": 48,
+      "raw": "0x152400"
+    }
+  ]
+}

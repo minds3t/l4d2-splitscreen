@@ -1,0 +1,59 @@
+[ss_native] [guest] Verified native PlayerLocal ABI; registration remains inactive
+
+[ss_native] [input] Native controller guard, joystick, split-screen and Xbox response cvars found
+
+[ss_native] Hook offline session ready installed at +00025230
+
+[ss_native] Hook offline session cleanup installed at +00025650
+
+[ss_native] Hook lobby local profile installed at +00007810
+
+[ss_native] Hook lobby input identity installed at +0000e880
+
+[ss_native] Hook offline guest lobby name installed at +00015ba0
+
+[ss_native] Hook lobby mouse press identity installed at +0005add0
+
+[ss_native] Hook lobby mouse release identity installed at +000e6700
+
+[ss_native] Hook lobby character dropdown installed at +0002d440
+
+[ss_native] Hook lobby character opening focus installed at +0002da40
+
+[ss_native] Hook native avatarinfo diagnostics installed at +00003b80
+
+[ss_native] Hook intentional offline return installed at +00025290
+
+[ss_native] Hook deferred offline lobby return installed at +0001bff0
+
+[ss_native] Hook owned lobby settings presentation installed at +000c2e10
+
+[ss_native] Hook owned lobby access summary installed at +00050010
+
+[ss_native] Hook offline guest avatar identity installed at +00132ac0
+
+[ss_native] [identity] Guest identity scoped to four native avatar-cache callsites; other callers remain native
+
+[ss_native] Hook native archived input preferences installed at +0015de80
+
+[ss_native] [input] Protected native archived joystick/response/sensitivity preferences at engine+15de80
+
+[ss_native] Hook native local-menu Xbox footer installed at +00004a50
+
+[ss_native] Hook native offline lobby footer order installed at +00043380
+
+[ss_native] Hook native Xbox footer prompt anchor installed at +00043960
+
+[ss_native] Hook native Xbox footer strip proportions installed at +0000f420
+
+[ss_native] Hook native local-menu Xbox button insets installed at +0005b700
+
+[ss_native] Hook native confirmation live child visibility installed at +00057090
+
+[ss_native] [presentation] Retained Xbox footer enabled for local menus; native labels/actions unchanged
+
+[ss_native] Hook native menu title-safe gate installed at +000d9648
+
+[ss_native] Hook native local HUD title-safe gate installed at +003f3128
+
+

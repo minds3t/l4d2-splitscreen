@@ -1,0 +1,101 @@
+Native shared-lobby testing, 2026-10-10
+
+First integrated build cc75d4f0397780b5606aba7cc81a5e6aa4592da8d214b414ad6794039b22cefa:
+- User reported both devices controlled player one in lobby and gameplay.
+- Lobby mouse events bypassed the keyboard/controller identity decoder.
+- The gameplay report followed a diagnostic sv_cheats reset, which can reset
+  the FCVAR_CHEAT in_forceuser. Readback before that reset did not prove the
+  setting persisted afterward.
+- Fresh native game without sv_cheats writes: user explicitly confirmed
+  controller controls top player and keyboard/mouse controls bottom player.
+
+Mouse/guard build e67138ce421b695ffc96d1dd75491a192d4ab66dbef2f9a3121c2abae714709d:
+- Native ICvar lookup sets config guard before menu joystick activation.
+- Mouse character selection changed P2 to Coach while P1 stayed Ellis.
+- Native logs independently recorded controller0 decoding to slot0 and mouse
+  events to slot1; native character commands used the corresponding profiles.
+- User confirmed: "works, both can select his own character".
+- Disable at lobby removed guest and session, restored guard0, joystick0 and
+  split flag15. W remained +forward and MOUSE1 remained +attack.
+
+Remaining issue at this checkpoint:
+- Native member records held P2 Coach, but a repeat map load spawned P2 Nick.
+  The first matching Coach spawn does not prove preference delivery. The
+  server-side guest identity and avatarinfo receiver are under investigation.
+- ReturnToLobby vote currently closes the offline session and returns to the
+  main menu. Preservation/recreation is not implemented in this tested build.
+- Second physical controller unavailable; no hardware claim for that path.
+
+Integrated avatar/settings/return build
+60de5a2887438950e5797c75140eeb764eb852d96405ad50bdca2a2279eb319b:
+- Native UI: OFFLINE CO-OP -> mode flyout -> shared two-member GameLobby.
+- Change Game Settings now uses Valve's edit screen (no solo Character/Start).
+  Selecting No Mercy and Back retains the owned offline session with two members.
+- Native character flyout changes cast labels to Bill/Zoey/Louis/Francis.
+- Choosing Zoey using the mouse writes the canonical roster avatar producer.
+- Launch c8m1_apartment: native avatar cache logs guest write at server+274faa
+  and reads at +26cf23 and +26cded. Global identity diagnostics remain zero for
+  guest and bots, and retain the host's real ID.
+- Read-only VScript observer (no survivor-transfer code in this package):
+  P1 human team2 character0 survivor_namvet; P2 human team2 character1
+  survivor_teenangst. keyboardOwner1. Thus native assignment produced Bill/Zoey.
+- ReturnToLobby vote recreates two members and retains avatar records, but
+  native initialization resets the saved campaign to Dead Center. Menu input
+  guard/joystick also reset to0 despite the feature remaining enabled.
+- Ordinary quit while enabled saves joystick1 before plugin unload. Unload
+  occurs after client cvar removal and cannot repair this. Original joystick0
+  was restored in both config files while game closed; original bytes from the
+  faulty quit are saved as quit-persistence-0.cfg and -1.cfg. A scoped native
+  configuration serializer fix and return input refresh are being implemented.
+Integrated build bece97bbc90811abf5cdd0ebe8ee994f07d85678eecad6033348b4ea0b2c60a0:
+- host_writeconfig serialized original joystick0 while live joystick1/guard1 remained.
+- No Mercy from native settings: Francis/Zoey -> P1 biker char3, P2 teenangst char1.
+  Both genuine human entities on survivor team2, keyboardOwner1.
+- Return recreated both member avatar records and re-armed menu input guard1,
+  joystick1, split2. Campaign still reset C8 -> C1; fixed Update envelope pending test.
+- A second campaign launch Nick/Coach produced native gambler/coach, chars0/2.
+- Survival c1m2_streets Ellis/Rochelle produced mechanic/producer, chars3/1,
+  both humans team2, keyboardOwner1.
+- Versus native diagnostic avatars Infected/Coach produced P1 human team3 Jockey
+  and P2 human team2 Coach; keyboardOwner1, sv_cheats0, active two-member session.
+- Scavenge native character flyout displays only survivor choices/Random;
+  opposing teams are currently selected with the diagnostic native-avatar API.
+- Scavenge c1m4_atrium Nick/Infected produced P1 human team2 Nick and P2 human
+  team3 Spitter, keyboardOwner1. Both native assignment directions now observed.
+- Ordinary quit directly from this enabled Scavenge game exited the process and
+  left saved joystick0, pitch1, inversion0, W+forward and MOUSE1+attack intact.
+  bece-after-quit.cfg and bece-console.log preserve that evidence. Quit directly
+  from an enabled lobby still needs its dedicated final check.
+Final combined DLL f0aaadea67945f4bf1f7e71d31fb663762ce14aaf889a18a0e0eaf68ecf9fa28:
+- Realism shared settings UI: No Mercy, chapter2 Subway, Easy, Bill/Louis.
+- Native launch c8m2_subway produced P1 human team2 char0 survivor_namvet,
+  P2 human team2 char2 survivor_manager, keyboardOwner1.
+- ReturnToLobby vote PASSED. Recreated owned offline session retains realism,
+  L4D2C8, chapter2, Easy, avatarsgambler/coach, players2, guard1joy1split2.
+  Both UI and member diagnostics agree; return-final.jpg records visible result.
+- Scavenge now retains two members with native competitive capacity8. Existing
+  character flyout shows localized Infected. Actual mouse click selected only
+  P2's native avatar=infected; P1 separately selected Nick. No custom team-picker.
+- Final Scavenge launch through the actual Infected UI selection produced P1
+  human team2 Nick and P2 human team3 Boomer, keyboardOwner1, sv_cheats0.
+  scavenge-game.jpg records split views and native competitive HUD.
+- Scavenge ReturnToLobby rebuilt two members/capacity8 and preserved native
+  gambler/infected records. Controller input logged after return then changed
+  only slot0 to infected; this was a native character command from input slot0,
+  not an automatic return rewrite.
+- Ordinary quit FROM ENABLED LOBBY passed: archive serializer logged original
+  joystick0 saved and live1 restored; process exited. All saved config lines
+  are unchanged except equivalent numeric formatting joystick0 ->0.000000.
+  Movement, attack, pitch1 and inversion0 all retained. Final config and engine
+  log are saved as final-after-lobby-quit.cfg and final-console.log.
+- Installed f0aaadea DLL/nativeVPK a643697b pair passed the independent static
+  package audit. See package-validation.json. The two ABI tests pass.
+
+Remaining scope: second physical controller unavailable; remote/Steam/LAN online
+not validated. Shared lobby retains stock PC geometry and some online wording.
+Final native tests are startup/transition checks, not full campaign/round runs.
+- Final fresh relaunch through Start Local Co-op underlying launcher: native
+  input active, main-menu OFFLINE CO-OP -> Versus opened native capacity8 lobby.
+  The actual Versus flyout includes Infected too; mouse selected P2infected,
+  separate native P1Nick. Final game left in this shared Versus lobby ready
+  for the user. versus-ready.jpg is the final visible checkpoint.

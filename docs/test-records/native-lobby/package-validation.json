@@ -1,0 +1,89 @@
+{
+  "validated_at_utc": "2026-10-10T00:46:42.963395+00:00",
+  "scope": "Read-only package and installed-file validation. No build, installation, game control or test rerun. Static packaging checks do not establish runtime behavior of the final DLL.",
+  "artifacts": {
+    "dll": {
+      "build_path": "native\\build\\Release\\ss_native.dll",
+      "installed_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\ss_native.dll",
+      "build_sha256": "f0aaadea67945f4bf1f7e71d31fb663762ce14aaf889a18a0e0eaf68ecf9fa28",
+      "installed_sha256": "f0aaadea67945f4bf1f7e71d31fb663762ce14aaf889a18a0e0eaf68ecf9fa28",
+      "byte_identical": true,
+      "bytes": 182784
+    },
+    "vpk": {
+      "build_path": "build\\native-splitscreen_support.vpk",
+      "installed_path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\addons\\splitscreen_support.vpk",
+      "build_sha256": "a643697b376d564e7bc86ac7497154804ffd0352e7ee3ce841345742428fc6c6",
+      "installed_sha256": "a643697b376d564e7bc86ac7497154804ffd0352e7ee3ce841345742428fc6c6",
+      "byte_identical": true,
+      "bytes": 367282
+    }
+  },
+  "vpk_tree": {
+    "format": 1,
+    "entry_count": 54,
+    "staged_file_count": 54,
+    "tree_bytes": 2099,
+    "crc_errors": [],
+    "duplicate_paths": [],
+    "external_archive_entries": [],
+    "missing_from_vpk": [],
+    "extra_in_vpk": [],
+    "different_bytes": [],
+    "all_entries_match_stage": true
+  },
+  "native_overlay": {
+    "scripts/vscripts/splitscreen_characters.nut": {
+      "stage_identical": true,
+      "vpk_identical": true,
+      "sha256": "25acdce775670f4bee41d18143e4e263c0fe56520e090b210a5eea29e0ae34ad"
+    }
+  },
+  "native_script_contract": {
+    "observer_has_no_survivor_transfer_commands": true,
+    "fallback_team_start_absent": true,
+    "local_competitive_policy_setup_retained": true,
+    "local_competitive_policy_restore_retained": true
+  },
+  "installed_local_mode_policy": {
+    "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Left 4 Dead 2\\left4dead2\\cfg\\addonconfig.cfg",
+    "values": {
+      "default": "0",
+      "versus": "0",
+      "scavenge": "0",
+      "mutation15": "1"
+    },
+    "required_modes_enabled": true,
+    "exact_expected_patch_of_saved_original": true,
+    "original_backup_sha256": "124b5c5abdce468601278d1e0407ce0217a4fd0f307e619bb288497c57025e31"
+  },
+  "autoload_and_probe_scan": {
+    "all_game_vdf_count": 10,
+    "addon_autoload_vdfs": [],
+    "vdfs_referencing_ss_native": [],
+    "loose_vscript_file_count": 0,
+    "loose_probe_or_splitscreen_scripts": [],
+    "note": "Packaged native assignment observer is intentional and byte-identical to native/addon; no loose probe script was found."
+  },
+  "recorded_build_checks": {
+    "manifest": "native/build/Release/validation.json",
+    "manifest_artifact_hash_matches": true,
+    "source_manifest_count": 17,
+    "source_manifest_mismatches": [],
+    "ctest_log": "native/build/Testing/Temporary/LastTest.log",
+    "ctest_log_sha256": "e086e86b3d37bf3912b89ff9a1f5705d0092fea68c6923ff69eab66f8ecaf4c6",
+    "ctest_pass_count": 2,
+    "guest_abi_recorded_pass": true,
+    "input_abi_recorded_pass": true,
+    "tests_rerun": false
+  },
+  "prior_runtime_evidence": {
+    "notes": "test-results/2026-10-10-native-lobby/physical-input-checks.txt",
+    "tested_build_for_quit": "bece97bbc90811abf5cdd0ebe8ee994f07d85678eecad6033348b4ea0b2c60a0",
+    "before_config_sha256": "dd07f6937558bf3aa50d1a986e988aa3a3819b12f5a74252e9138f830465a1fe",
+    "after_enabled_game_quit_config_sha256": "dd07f6937558bf3aa50d1a986e988aa3a3819b12f5a74252e9138f830465a1fe",
+    "after_quit_exact_original_bytes": true,
+    "status": "Root-recorded gameplay and quit evidence belongs to earlier builds; the final f0aaadea return-settings and competitive-lobby corrections are undergoing root runtime validation. Second physical controller unavailable."
+  },
+  "static_validation_pass": true
+}

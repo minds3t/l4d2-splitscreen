@@ -1,0 +1,28 @@
+Splitscreen Support for Left 4 Dead 2
+Copyright (c) 2026 Minds3t. All rights reserved.
+
+The source code is published so that anyone can read and check it.
+
+You may:
+- read the source code and build it for your own private use;
+- download and use the release packages published by the author,
+  unmodified, to play the game.
+
+Without the author's prior written permission you may not:
+- copy, publish or redistribute the source code or the release packages,
+  in whole or in part, changed or unchanged;
+- publish modified versions or works based on this project.
+
+Forks made with GitHub's fork function are allowed only as far as GitHub's
+Terms of Service require and give no rights beyond them.
+
+To ask for permission, open an issue in the repository. Any copy made with
+permission must keep this notice and name the author.
+
+Third-party parts keep their own terms: MinHook (plugin/vendor/minhook,
+BSD 2-Clause) and the Xenia reference files under docs/research/xbox_lobby.
+Left 4 Dead 2 and all files derived from it belong to Valve Corporation;
+this notice claims no rights in them.
+
+The software is provided "as is", without warranty of any kind. The author
+is not liable for any damage arising from its use.

@@ -1,0 +1,4 @@
+vpk==1.4.0
+pefile==2024.8.26
+capstone==5.0.7
+minidump==0.0.24

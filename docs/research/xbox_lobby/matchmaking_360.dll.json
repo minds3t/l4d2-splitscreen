@@ -1,0 +1,55 @@
+{
+  "source": "xbox_raw\\left4dead2\\bin\\matchmaking_360.dll",
+  "source_sha256": "700f43c988910b883758a81f1cb73031d9e3a364ab06bb6714b0e8f26c111944",
+  "output": "research\\xbox_lobby\\matchmaking_360.dll.pe",
+  "output_sha256": "c16467975cdd8a1c9008ad9c0955fe0fde2943ea8612fdab901e752fdae0ecc5",
+  "output_bytes": 425984,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x8b080000",
+  "entry_point": "0x8b0cb8d0",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 56048,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0xe000",
+      "size": 8088,
+      "raw": "0xe000"
+    },
+    {
+      "name": ".text",
+      "va": "0x10000",
+      "size": 325584,
+      "raw": "0x10000"
+    },
+    {
+      "name": ".data",
+      "va": "0x60000",
+      "size": 114480,
+      "raw": "0x5f800"
+    },
+    {
+      "name": ".edata",
+      "va": "0x80000",
+      "size": 123,
+      "raw": "0x63800"
+    },
+    {
+      "name": ".idata",
+      "va": "0x90000",
+      "size": 608,
+      "raw": "0x63a00"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0xa0000",
+      "size": 48,
+      "raw": "0x63e00"
+    }
+  ]
+}

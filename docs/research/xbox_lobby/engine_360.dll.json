@@ -1,0 +1,85 @@
+{
+  "source": "xbox_raw\\bin\\engine_360.dll",
+  "source_sha256": "01e9bcd3ec3019ef77ba1ce2d34c150edca13d92c1cbe9eb435d3e7a8506fdea",
+  "output": "research\\xbox_lobby\\engine_360.dll.pe",
+  "output_sha256": "f1cb36df10ca565ca7b29c03df16b2bd0f363932c8a4b39a401495aaea61eccc",
+  "output_bytes": 7110656,
+  "encryption": 1,
+  "compression": 1,
+  "image_base": "0x86b00000",
+  "entry_point": "0x86ebddf0",
+  "sections": [
+    {
+      "name": ".rdata",
+      "va": "0x400",
+      "size": 581008,
+      "raw": "0x400"
+    },
+    {
+      "name": ".pdata",
+      "va": "0x8e200",
+      "size": 86696,
+      "raw": "0x8e200"
+    },
+    {
+      "name": "BINKCONS",
+      "va": "0xa3600",
+      "size": 10528,
+      "raw": "0xa3600"
+    },
+    {
+      "name": ".text",
+      "va": "0xb0000",
+      "size": 3499232,
+      "raw": "0xa6000"
+    },
+    {
+      "name": "BINK",
+      "va": "0x406600",
+      "size": 63768,
+      "raw": "0x3fc600"
+    },
+    {
+      "name": "BINKBSS",
+      "va": "0x420000",
+      "size": 952,
+      "raw": "0x0"
+    },
+    {
+      "name": ".data",
+      "va": "0x420400",
+      "size": 2767260,
+      "raw": "0x40c000"
+    },
+    {
+      "name": "BINKDATA",
+      "va": "0x6c3e00",
+      "size": 15720,
+      "raw": "0x432c00"
+    },
+    {
+      "name": ".XBMOVIE",
+      "va": "0x6c7c00",
+      "size": 8,
+      "raw": "0x436a00"
+    },
+    {
+      "name": ".edata",
+      "va": "0x6d0000",
+      "size": 155,
+      "raw": "0x436c00"
+    },
+    {
+      "name": ".idata",
+      "va": "0x6e0000",
+      "size": 1576,
+      "raw": "0x436e00"
+    },
+    {
+      "name": ".XBLD",
+      "va": "0x6f0000",
+      "size": 208,
+      "raw": "0x437600"
+    }
+  ]
+}

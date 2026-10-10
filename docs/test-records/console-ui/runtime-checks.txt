@@ -1,0 +1,39 @@
+Console presentation runtime checks, 2026-10-10
+
+Checkpoint DLL2449683f / VPK218f9ba2:
+- Exact-build fingerprint checks passed and bridge enabled on launch.
+- Actual main-menu tile -> Campaign opened native offline two-member lobby.
+- Console spacing, no desktop chat/voice/Leave controls, original A/B glyphs.
+- Lobby displays localized Offline Co-op and native layout7: B Back, A Select.
+- Actual mouse character picker selected Rochelle only for player2; player1
+  remained Random. Diagnostic slot0 avatar request then chose Nick separately.
+- Settings: keyboard Down moved focus, Enter opened difficulty picker,
+  Escape closed picker, second Escape returned to same two-member lobby.
+- Actual Start Game button connected two humans: Nick/Rochelle, team2.
+  guard=1 joystick=1 split=2 in_forceuser=1 sv_cheats=0.
+- Native pause opened through cmd1 gameui_activate, rendered ASelect/BDone;
+  keyboard Escape closed it. Long German labels clipped in width180; corrected
+  to the retained PC text width220 in subsequent VPKcf36d0e0, pending live check.
+- ReturnToLobby vote (cmd1 callvote ReturnToLobby, cmd2 vote Yes) restored
+  Campaign/Dead Center/chapter1/Normal and Nick/Rochelle, input guard1/joy1/split2.
+- Versus: all8 nominal member rows fit; actual mouse selection of Infected
+  changed only player2. Two actual members and offline network remained.
+- Scavenge: lobby and edit settings (including round limit) rendered correctly;
+  Escape returned to same two-member lobby.
+- Enabled lobby quit preserved config.cfg byte-for-byte against this turn's
+  baseline SHA2565683373a0ef65c9d75d392ea4c4bd8aec0dc6e7da6f5caa7e75dcc0d75ace798.
+- Logs:2449683f-console.log and2449683f-native.log.
+
+Resolved: the user physically confirmed Escape closes and reopens pause. Only
+automated gameplay key injection failed; no input binding or routing fix needed.
+Native cancelselect cancels weapon selection and is not equivalent to Escape.
+
+Final checkpoint DLL2449683f / VPKcf36d0e0:
+- Width220 shows full German pause captions while retaining console layout.
+- Repeated native return vote restored both Nick/Rochelle and Campaign settings.
+- User physically confirmed keyboard Escape closes and reopens the pause menu.
+- Final lobby status owned/offline/two members, input guard1/joy1/split2.
+
+Physical input checks in the preceding native-lobby checkpoint remain historical
+user evidence; no second controller is available. This presentation checkpoint
+has not validated online, Xbox Live profiles or complete gameplay rounds.
